@@ -180,63 +180,62 @@
 <script src="nt-store.js"></script>
 <script>
     (async function() {
-        if (!NTStore.requireAuth('user')) return;
-        await renderTienda();
-        renderMisCanjes();
-    })();
+    if (!NTStore.requireAuth('user')) return;
+    await renderTienda();
+    await renderMisCanjes();
+})();
 
-    function cerrarSesion() {
-        NTStore.clearSession();
-        location.href = 'login.html';
+function cerrarSesion() {
+    NTStore.clearSession();
+    location.href = 'login.html';
+}
+
+async function renderTienda() {
+    const userData = await NTStore.getUsuario();
+    const pts  = userData.ok ? userData.usuario.puntos : 0;
+    const items = await NTStore.getItemsActivos(); // ✅ await
+    const grid  = document.getElementById('grid-tienda');
+
+    document.getElementById('puntos-actuales').textContent = pts;
+    grid.innerHTML = '';
+
+    if (!items.length) {
+        grid.innerHTML = `<div class="sin-items" style="grid-column:1/-1;">
+            <i class="fas fa-store-slash" style="font-size:40px;opacity:0.3;display:block;margin-bottom:10px;"></i>
+            <p>No hay artículos disponibles.</p>
+        </div>`;
+        return;
     }
 
-    async function renderTienda() {
-        const userData = await NTStore.getUsuario();
-        const pts  = userData.ok ? userData.usuario.puntos : 0;
-        const items = NTStore.getItemsActivos();
-        const grid  = document.getElementById('grid-tienda');
+    items.forEach(item => {
+        const puedo = pts >= item.costo;
+        const div   = document.createElement('div');
+        div.className = 'card item-tienda';
+        div.id = `item-store-${item.id}`;
+        const iconMap = { '🎟️':'fa-ticket-alt','☕':'fa-coffee','🏅':'fa-medal','🎁':'fa-gift','⭐':'fa-star','🍕':'fa-pizza-slice' };
+        const icono = iconMap[item.emoji] || 'fa-box-open';
+        div.innerHTML = `
+            ${iconMap[item.emoji]
+                ? `<i class="fas ${icono} item-icon" ${item.emoji==='🏅'?'style="color:#f59e0b;"':''}></i>`
+                : `<div style="font-size:36px;margin-bottom:10px;">${item.emoji}</div>`
+            }
+            <h3>${item.nombre}</h3>
+            <p style="color:#64748b;font-size:14px;margin-top:10px;">${item.desc}</p>
+            <div class="precio">${item.costo} Pts</div>
+            ${puedo
+                ? `<button class="btn-canjear" id="btn-store-${item.id}" onclick="canjearItem(${item.id})">
+                       <i class="fas fa-shopping-cart" style="margin-right:6px;"></i> Canjear Ahora
+                   </button>`
+                : `<button class="btn-bloqueado" disabled>
+                       <i class="fas fa-lock" style="margin-right:6px;"></i> Puntos Insuficientes
+                   </button>`
+            }
+        `;
+        grid.appendChild(div);
+    });
+}
 
-        document.getElementById('puntos-actuales').textContent = pts;
-        grid.innerHTML = '';
-
-        if (!items.length) {
-            grid.innerHTML = `<div class="sin-items" style="grid-column:1/-1;">
-                <i class="fas fa-store-slash" style="font-size:40px;opacity:0.3;display:block;margin-bottom:10px;"></i>
-                <p>No hay artículos disponibles.</p>
-            </div>`;
-            return;
-        }
-
-        items.forEach(item => {
-            const puedo = pts >= item.costo;
-            const div   = document.createElement('div');
-            div.className = 'card item-tienda';
-            div.id = `item-store-${item.id}`;
-            const iconMap = { '🎟️':'fa-ticket-alt','☕':'fa-coffee','🏅':'fa-medal','🎁':'fa-gift','⭐':'fa-star','🍕':'fa-pizza-slice' };
-            const icono = iconMap[item.emoji] || 'fa-box-open';
-            div.innerHTML = `
-                ${iconMap[item.emoji]
-                    ? `<i class="fas ${icono} item-icon" ${item.emoji==='🏅'?'style="color:#f59e0b;"':''}></i>`
-                    : `<div style="font-size:36px;margin-bottom:10px;">${item.emoji}</div>`
-                }
-                <h3>${item.nombre}</h3>
-                <p style="color:#64748b;font-size:14px;margin-top:10px;">${item.desc}</p>
-                <div class="precio">${item.costo} Pts</div>
-                ${puedo
-                    ? `<button class="btn-canjear" id="btn-store-${item.id}" onclick="canjearItem(${item.id})">
-                           <i class="fas fa-shopping-cart" style="margin-right:6px;"></i> Canjear Ahora
-                       </button>`
-                    : `<button class="btn-bloqueado" disabled>
-                           <i class="fas fa-lock" style="margin-right:6px;"></i> Puntos Insuficientes
-                       </button>`
-                }
-            `;
-            grid.appendChild(div);
-        });
-    }
-
-    
-        async function canjearItem(itemId) {
+async function canjearItem(itemId) {
     const btn = document.getElementById(`btn-store-${itemId}`);
     if (btn) {
         btn.disabled = true;
@@ -271,38 +270,39 @@
     toast.style.display = 'flex';
     setTimeout(() => toast.style.display = 'none', 2800);
 
-    renderMisCanjes();
+    await renderMisCanjes();
 }
 
-    function renderMisCanjes() {
-        const canjes = NTStore.getCanjes();
-        const lista  = document.getElementById('mis-canjes-lista');
-        if (!canjes.length) {
-            lista.innerHTML = `<div class="empty-canjes">
-                <i class="fas fa-shopping-bag"></i>
-                <p>Aún no has realizado ningún canje.</p>
-            </div>`;
-            return;
-        }
-        lista.innerHTML = '';
-        [...canjes].reverse().forEach(c => {
-            const div = document.createElement('div');
-            div.className = 'canje-row';
-            div.innerHTML = `
-                <div class="canje-emoji">${c.emoji}</div>
-                <div class="canje-info">
-                    <strong>${c.nombre}</strong>
-                    <span>${c.fecha} · ${c.hora}</span>
-                </div>
-                <div class="canje-pts">-${c.costo} pts</div>
-                <span class="badge-estado ${c.estado==='entregado'?'estado-entregado':'estado-pendiente'}">
-                    ${c.estado==='entregado'
-                        ? '<i class="fas fa-check" style="margin-right:4px;"></i>Entregado'
-                        : '<i class="fas fa-clock" style="margin-right:4px;"></i>Pendiente'}
-                </span>
-            `;
-            lista.appendChild(div);
-        });
+async function renderMisCanjes() {
+    const canjes = await NTStore.getCanjes(); // ✅ await
+    const lista  = document.getElementById('mis-canjes-lista');
+    if (!canjes.length) {
+        lista.innerHTML = `<div class="empty-canjes">
+            <i class="fas fa-shopping-bag"></i>
+            <p>Aún no has realizado ningún canje.</p>
+        </div>`;
+        return;
+    }
+    lista.innerHTML = '';
+    [...canjes].reverse().forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'canje-row';
+        div.innerHTML = `
+            <div class="canje-emoji">${c.emoji}</div>
+            <div class="canje-info">
+                <strong>${c.nombre}</strong>
+                <span>${c.fecha} · ${c.hora}</span>
+            </div>
+            <div class="canje-pts">-${c.costo} pts</div>
+            <span class="badge-estado ${c.estado==='entregado'?'estado-entregado':'estado-pendiente'}">
+                ${c.estado==='entregado'
+                    ? '<i class="fas fa-check" style="margin-right:4px;"></i>Entregado'
+                    : '<i class="fas fa-clock" style="margin-right:4px;"></i>Pendiente'}
+            </span>
+        `;
+        lista.appendChild(div);
+    });
+
     }
 </script>
 </body>
