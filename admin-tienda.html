@@ -2,7 +2,7 @@
     <html lang="es">
     <head>
         <meta charset="UTF-8">
-        <title>Control de Tienda - Admin NutriTrack</title>
+        <title>Control de Tienda - Admin Comidas mi niña</title>
         <link rel="stylesheet" href="estilos.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <style>
@@ -362,7 +362,7 @@
         <nav>
             <div class="admin-nav-header">
                 <div class="brand" style="padding-bottom:0; border-bottom:none; margin-bottom:0;">
-                    <i class="fas fa-leaf"></i> NutriTrack
+                    <i class="fas fa-leaf"></i> Comidas mi niña
                 </div>
                 <p><i class="fas fa-shield-alt"></i> Panel Admin</p>
             </div>
@@ -499,7 +499,7 @@
     }
 
     async function renderTodo() {
-    const res = await fetch('/nutritrack/api/usuario.php?username=Mivida');
+    const res = await fetch('/api/usuario.php?username=Mivida');
     const userData = await res.json();
     const pts = userData.ok ? userData.usuario.puntos : 0;
     document.getElementById('pts-usuario').textContent = pts;

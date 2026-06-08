@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel Admin - NutriTrack</title>
+    <title>Panel Admin - Comidas mi niña</title>
     <link rel="stylesheet" href="estilos.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -174,7 +174,7 @@
     <nav>
         <div class="admin-nav-header">
             <div class="brand" style="padding-bottom:0; border-bottom:none; margin-bottom:0;">
-                <i class="fas fa-leaf"></i> NutriTrack
+                <i class="fas fa-leaf"></i> Comidas mi niña
             </div>
             <p><i class="fas fa-shield-alt"></i> Panel Admin</p>
         </div>
@@ -320,9 +320,9 @@
     const MIVIDA_UID = 2;
 
     const [resDash, resResumen, resHistorial] = await Promise.all([
-        fetch(`/nutritrack/api/dashboard.php?usuario_id=${MIVIDA_UID}`).then(r => r.json()),
-        fetch(`/nutritrack/api/resumen_dia.php?usuario_id=${MIVIDA_UID}`).then(r => r.json()),
-        fetch(`/nutritrack/api/historial.php?usuario_id=${MIVIDA_UID}&semana=1`).then(r => r.json()),
+       fetch(`/api/dashboard.php?usuario_id=${MIVIDA_UID}`).then(r => r.json()),
+fetch(`/api/resumen_dia.php?usuario_id=${MIVIDA_UID}`).then(r => r.json()),
+fetch(`/api/historial.php?usuario_id=${MIVIDA_UID}&semana=1`).then(r => r.json()),
     ]);
 
     // ... resto del código igual
