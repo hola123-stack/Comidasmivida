@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro - NutriTrack</title>
+    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .btn-logout-user {
+            padding: 8px 16px;
+            background: rgba(239, 68, 68, 0.08);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+        .btn-logout-user:hover { background: rgba(239, 68, 68, 0.15); }
+
+        .tipo-sugerencia {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .success-toast, .error-toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 15px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 9999;
+            animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-width: 340px;
+        }
+        .success-toast {
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4);
+        }
+        .error-toast {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        .btn-calm:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
+        .btn-calm .spinner { display: none; }
+        .btn-calm.loading .spinner  { display: inline-block; }
+        .btn-calm.loading .btn-text { display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spinner { animation: spin 0.8s linear infinite; display: inline-block; }
+
+        .pts-preview {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 18px;
+            transition: all 0.3s ease;
+        }
+        .pts-preview.show {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            color: #f59e0b;
+        }
+        .pts-preview.hide { opacity: 0; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="brand"><i class="fas fa-leaf"></i> NutriTrack</div>
+        <ul>
+            <li><a href="dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a></li>
+            <li><a href="registro.html" class="active"><i class="fas fa-plus-circle"></i> Registrar Comida</a></li>
+            <li><a href="historial.html"><i class="fas fa-history"></i> Historial</a></li>
+            <li><a href="tienda.html"><i class="fas fa-store"></i> Tienda</a></li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px;">
+            <h2 class="animate-fade" style="margin-bottom:0;">Registra tu Ingesta 🌱</h2>
+            <a href="#" class="btn-logout-user" onclick="cerrarSesion()">
+                <i class="fas fa-sign-out-alt" style="margin-right:6px;"></i> Cerrar Sesión
+            </a>
+        </div>
+        <p class="animate-fade delay-1" style="color:var(--text-light); margin-bottom:30px;">
+            Tómate un segundo para guardar lo que acabas de comer. ¡Cada buen hábito cuenta!
+        </p>
+
+        <div class="registro-container">
+            <div class="card animate-fade delay-2" style="padding:40px; border-radius:24px;">
+
+                <!-- Nombre -->
+                <div class="form-group" style="margin-bottom:25px;">
+                    <label class="calm-label">¿Qué delicia comiste hoy?</label>
+                    <input type="text" id="input-alimento" class="calm-input"
+                           placeholder="Ej. Tazón de avena con fresas..."
+                           oninput="actualizarPtsPreview()">
+                </div>
+
+                <!-- Tipo -->
+                <div class="form-group" style="margin-bottom:25px;">
+                    <label class="calm-label">¿Qué tiempo de comida fue?</label>
+                    <div id="tipo-badge" class="tipo-sugerencia" style="display:none;">
+                        <i class="fas fa-magic"></i> <span id="tipo-sugerencia-texto"></span>
+                    </div>
+                    <select id="input-tipo" class="calm-input" style="border-radius:30px; cursor:pointer;"
+                            onchange="actualizarPtsPreview()">
+                        <option value="Desayuno">🌅 Desayuno</option>
+                        <option value="Comida">🍽️ Comida</option>
+                        <option value="Cena">🌙 Cena</option>
+                        <option value="Merienda">🍎 Merienda / Snack</option>
+                    </select>
+                </div>
+
+                <!-- Hora -->
+                <div class="form-group" style="margin-bottom:30px;">
+                    <label class="calm-label">¿A qué hora fue?</label>
+                    <input type="time" id="input-hora" class="calm-input" style="max-width:200px;"
+                           onchange="detectarTipoPorHora()">
+                </div>
+
+                <!-- Porción -->
+                <div class="form-group" style="margin-bottom:30px;">
+                    <label class="calm-label">¿Qué tan grande fue la porción?</label>
+                    <div class="portion-selector">
+                        <div class="portion-btn" onclick="seleccionarPorcion(this, 'Ligera')">
+                            <i>🥗</i><span>Ligera</span>
+                        </div>
+                        <div class="portion-btn active" onclick="seleccionarPorcion(this, 'Normal')">
+                            <i>🍱</i><span>Normal</span>
+                        </div>
+                        <div class="portion-btn" onclick="seleccionarPorcion(this, 'Abundante')">
+                            <i>🍔</i><span>Abundante</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview puntos -->
+                <div id="pts-preview" class="pts-preview hide">
+                    <i class="fas fa-star"></i>
+                    <span id="pts-preview-texto">~20 pts estimados</span>
+                </div>
+
+                <!-- Foto (opcional, solo visual) -->
+                <div class="form-group" style="margin-bottom:35px;">
+                    <label class="calm-label">Evidencia visual <span style="color:var(--text-light); font-weight:400;">(Opcional)</span></label>
+                    <div class="upload-zone" onclick="document.getElementById('file-upload').click()" id="upload-zone">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p style="color:var(--sidebar); font-weight:bold; margin-bottom:5px;">Sube una foto de tu plato</p>
+                        <p style="color:#94a3b8; font-size:14px;">Haz clic o arrastra la imagen aquí</p>
+                        <input id="file-upload" type="file" style="display:none;"
+                               accept="image/*" onchange="mostrarFoto(this)">
+                    </div>
+                </div>
+
+                <!-- Botón guardar -->
+                <button class="btn-calm" id="btn-guardar" onclick="guardarRegistro()">
+                    <span class="btn-text">
+                        <i class="fas fa-check-circle" style="margin-right:8px;"></i>
+                        Guardar Registro y Sumar Puntos
+                    </span>
+                    <span class="spinner">
+                        <i class="fas fa-circle-notch"></i> Guardando...
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-toast" id="toast-exito">
+        <i class="fas fa-check-circle" style="font-size:20px;"></i>
+        <span id="toast-msg">¡Registro guardado!</span>
+    </div>
+    <div class="error-toast" id="toast-error">
+        <i class="fas fa-exclamation-circle" style="font-size:20px;"></i>
+        <span id="toast-error-msg">Ocurrió un error.</span>
+    </div>
+
+    <script src="nt-store.js"></script>
+    <script>
+        let porcionSeleccionada = 'Normal';
+
+        (function init() {
+            if (!NTStore.requireAuth('user')) return;
+            const ahora = new Date();
+            const hh = String(ahora.getHours()).padStart(2, '0');
+            const mm = String(ahora.getMinutes()).padStart(2, '0');
+            document.getElementById('input-hora').value = `${hh}:${mm}`;
+            detectarTipoPorHora();
+            actualizarPtsPreview();
+        })();
+
+        function cerrarSesion() {
+            NTStore.clearSession();
+            location.href = 'login.html';
+        }
+
+        function detectarTipoPorHora() {
+            const horaStr = document.getElementById('input-hora').value;
+            if (!horaStr) return;
+            const [hh] = horaStr.split(':').map(Number);
+            let tipo, etiqueta;
+            if      (hh >= 6  && hh <= 10) { tipo = 'Desayuno'; etiqueta = '🌅 Parece que fue Desayuno'; }
+            else if (hh >= 11 && hh <= 15) { tipo = 'Comida';   etiqueta = '🍽️ Parece que fue Comida'; }
+            else if (hh >= 19 && hh <= 23) { tipo = 'Cena';     etiqueta = '🌙 Parece que fue Cena'; }
+            else                            { tipo = 'Merienda'; etiqueta = '🍎 Parece que fue una Merienda'; }
+
+            document.getElementById('input-tipo').value = tipo;
+            document.getElementById('tipo-sugerencia-texto').textContent = etiqueta;
+            document.getElementById('tipo-badge').style.display = 'inline-flex';
+            actualizarPtsPreview();
+        }
+
+        function actualizarPtsPreview() {
+            const alimento = document.getElementById('input-alimento').value.trim();
+            const preview  = document.getElementById('pts-preview');
+            if (!alimento) { preview.className = 'pts-preview hide'; return; }
+
+            const ptsBase = { Ligera: 15, Normal: 25, Abundante: 30 };
+            const mult    = { Ligera: 0.8, Normal: 1.0, Abundante: 1.2 };
+            const est     = Math.round((ptsBase[porcionSeleccionada] || 25) * (mult[porcionSeleccionada] || 1));
+            document.getElementById('pts-preview-texto').textContent = `~${est} pts estimados`;
+            preview.className = 'pts-preview show';
+        }
+
+        function seleccionarPorcion(el, porcion) {
+            document.querySelectorAll('.portion-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            porcionSeleccionada = porcion;
+            actualizarPtsPreview();
+        }
+
+        function mostrarFoto(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    document.getElementById('upload-zone').innerHTML = `
+                        <img src="${e.target.result}" style="max-height:150px; border-radius:12px; object-fit:cover;">
+                        <p style="color:var(--primary); margin-top:10px; font-weight:600; font-size:13px;">✅ Foto lista</p>`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function guardarRegistro() {
+    const alimento = document.getElementById('input-alimento').value.trim();
+    const inputEl  = document.getElementById('input-alimento');
+
+    if (!alimento) {
+        inputEl.focus();
+        inputEl.style.borderColor = '#ef4444';
+        inputEl.style.boxShadow   = '0 0 0 4px rgba(239,68,68,0.15)';
+        return;
+    }
+    inputEl.style.borderColor = '';
+    inputEl.style.boxShadow   = '';
+
+    const btn = document.getElementById('btn-guardar');
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    const tipo = document.getElementById('input-tipo').value;
+    const hora = document.getElementById('input-hora').value;
+
+    // Leer foto si existe
+    let fotoBase64 = null;
+    const fileInput = document.getElementById('file-upload');
+    if (fileInput.files && fileInput.files[0]) {
+        fotoBase64 = await new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = e => resolve(e.target.result);
+            reader.readAsDataURL(fileInput.files[0]);
+        });
+    }
+
+    const res = await NTStore.addRegistro(alimento, tipo, porcionSeleccionada, hora, fotoBase64);
+
+    if (!res.ok) {
+        document.getElementById('toast-error-msg').textContent = res.error || 'Error al guardar';
+        document.getElementById('toast-error').style.display = 'flex';
+        setTimeout(() => document.getElementById('toast-error').style.display = 'none', 2500);
+        btn.classList.remove('loading');
+        btn.disabled = false;
+        return;
+    }
+
+    document.getElementById('toast-msg').textContent = res.mensaje || `¡Guardado! +${res.puntos} pts 🎉`;
+    document.getElementById('toast-exito').style.display = 'flex';
+    setTimeout(() => {
+        document.getElementById('toast-exito').style.display = 'none';
+        location.href = 'historial.html';
+    }, 1800);
+}
+    </script>
+</body>
+</html>

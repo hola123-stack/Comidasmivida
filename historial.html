@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Historial - NutriTrack</title>
+    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .btn-logout-user {
+            padding: 8px 16px;
+            background: rgba(239, 68, 68, 0.08);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+        .btn-logout-user:hover { background: rgba(239, 68, 68, 0.15); }
+        .table-historial th { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .photo-thumb {
+            width: 44px; height: 44px;
+            border-radius: 8px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            overflow: hidden;
+        }
+        .resumen-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .resumen-chip {
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .chip-verde { background: #f0fdf4; color: #16a34a; border: 2px solid #bbf7d0; }
+        .chip-rojo  { background: #fef2f2; color: #dc2626; border: 2px solid #fecaca; }
+        .chip-azul  { background: #eff6ff; color: #2563eb; border: 2px solid #bfdbfe; }
+        .filtros { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .filtro-btn {
+            padding: 7px 16px;
+            border-radius: 20px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            transition: all 0.2s;
+        }
+        .filtro-btn.active, .filtro-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #f0fdf4;
+        }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-light); }
+        .empty-state i { font-size: 50px; margin-bottom: 15px; opacity: 0.4; display: block; }
+        .empty-state p { font-size: 16px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="brand"><i class="fas fa-leaf"></i> Comidas mi niña</div>
+        <ul>
+            <li><a href="dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a></li>
+            <li><a href="registro.html"><i class="fas fa-plus-circle"></i> Registrar Comida</a></li>
+            <li><a href="historial.html" class="active"><i class="fas fa-history"></i> Historial</a></li>
+            <li><a href="tienda.html"><i class="fas fa-store"></i> Tienda</a></li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+            <h2 class="animate-fade" style="margin-bottom:0;">Historial de Registros</h2>
+            <a href="#" class="btn-logout-user" onclick="cerrarSesion()">
+                <i class="fas fa-sign-out-alt" style="margin-right:6px;"></i> Cerrar Sesión
+            </a>
+        </div>
+
+        <!-- Resumen rápido -->
+        <div class="resumen-bar animate-fade delay-1">
+            <div class="resumen-chip chip-verde"><i class="fas fa-arrow-up"></i> <span id="pts-ganados">0 pts ganados</span></div>
+            <div class="resumen-chip chip-rojo"><i class="fas fa-arrow-down"></i> <span id="pts-perdidos">0 pts perdidos</span></div>
+            <div class="resumen-chip chip-azul"><i class="fas fa-list"></i> <span id="total-registros">0 registros</span></div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filtros animate-fade delay-1">
+            <button class="filtro-btn active" onclick="cambiarFiltro('', this)">Todos</button>
+            <button class="filtro-btn" onclick="cambiarFiltro('Desayuno', this)">🌅 Desayuno</button>
+            <button class="filtro-btn" onclick="cambiarFiltro('Comida', this)">🍽️ Comida</button>
+            <button class="filtro-btn" onclick="cambiarFiltro('Cena', this)">🌙 Cena</button>
+            <button class="filtro-btn" onclick="cambiarFiltro('Merienda', this)">🍎 Merienda</button>
+        </div>
+
+        <!-- Tabla -->
+        <div class="card animate-fade delay-2" style="padding:0; overflow:hidden;">
+            <table class="table-historial">
+                <thead>
+                    <tr>
+                        <th style="padding:15px;">Emoji</th>
+                        <th>Alimento</th>
+                        <th>Tipo</th>
+                        <th>Día</th>
+                        <th>Hora</th>
+                        <th>Porción</th>
+                        <th>Puntos</th>
+                    </tr>
+                </thead>
+                <tbody id="historial-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="nt-store.js"></script>
+    <script src="nt-store.js"></script>
+<script>
+    (function() {
+        if (!NTStore.requireAuth('user')) return;
+        cargarHistorial('');
+    })();
+
+    function cerrarSesion() {
+        NTStore.clearSession();
+        location.href = 'login.html';
+    }
+
+    function cambiarFiltro(tipo, btn) {
+        document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        cargarHistorial(tipo);
+    }
+
+    async function cargarHistorial(filtro) {
+        const res = await NTStore.getHistorial(0, filtro);
+
+        if (!res.ok) {
+            document.getElementById('historial-body').innerHTML =
+                `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Error: ${res.error}</p></div></td></tr>`;
+            return;
+        }
+
+        const regs = res.registros;
+        const totales = res.totales;
+
+        document.getElementById('pts-ganados').textContent    = `+${totales.ganados} pts ganados`;
+        document.getElementById('pts-perdidos').textContent   = `${totales.perdidos} pts perdidos`;
+        document.getElementById('total-registros').textContent = `${regs.length} registros`;
+
+        const tbody = document.getElementById('historial-body');
+        tbody.innerHTML = '';
+
+        if (!regs.length) {
+            tbody.innerHTML = `<tr><td colspan="7">
+                <div class="empty-state">
+                    <i class="fas fa-utensils"></i>
+                    <p>No hay registros todavía.</p>
+                    <a href="registro.html" style="background:var(--primary);color:white;padding:12px 24px;border-radius:20px;text-decoration:none;font-weight:700;">
+                        + Registrar ahora
+                    </a>
+                </div>
+            </td></tr>`;
+            return;
+        }
+
+        regs.forEach(r => {
+            const positivo = r.puntos_asignados >= 0;
+            const tr = document.createElement('tr');
+            tr.style.borderLeft = `3px solid ${positivo ? '#22c55e' : '#ef4444'}`;
+            tr.innerHTML = `
+                <td style="padding:12px 15px;">
+                    <div class="photo-thumb">${r.emoji || '🍴'}</div>
+                </td>
+                <td><strong>${r.nombre_libre}</strong></td>
+                <td><span style="color:var(--text-light); font-size:13px;">${r.tipo_comida}</span></td>
+                <td style="color:var(--text-light); font-size:13px;">${r.dia_semana} ${r.fecha}</td>
+                <td>${r.hora}</td>
+                <td><span style="font-size:11px;">${r.porcion}</span></td>
+                <td><strong style="color:${positivo ? 'var(--primary)' : '#ef4444'};">${positivo ? '+' : ''}${r.puntos_asignados} pts</strong></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+</script>
+</body>
+</html>

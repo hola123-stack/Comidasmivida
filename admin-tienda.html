@@ -1,0 +1,729 @@
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>Control de Tienda - Admin NutriTrack</title>
+        <link rel="stylesheet" href="estilos.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <style>
+            .admin-badge {
+                display: inline-block;
+                background: linear-gradient(135deg, #f59e0b, #d97706);
+                color: white;
+                font-size: 11px;
+                font-weight: 700;
+                padding: 3px 10px;
+                border-radius: 20px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                margin-left: 10px;
+                vertical-align: middle;
+            }
+            .admin-nav-header {
+                padding: 20px 25px 10px;
+                border-bottom: 1px solid #1e293b;
+                margin-bottom: 10px;
+            }
+            .admin-nav-header p {
+                color: #f59e0b;
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                margin-top: 5px;
+            }
+            .btn-logout {
+                display: block;
+                margin: 20px 15px 10px;
+                padding: 12px 20px;
+                background: rgba(239, 68, 68, 0.1);
+                color: #ef4444;
+                border: 1px solid rgba(239, 68, 68, 0.3);
+                border-radius: 8px;
+                text-align: center;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                transition: all 0.3s;
+                text-decoration: none;
+            }
+            .btn-logout:hover { background: rgba(239, 68, 68, 0.2); }
+
+            /* ── Notificaciones de canje ── */
+            .notif-section {
+                margin-bottom: 30px;
+            }
+            .notif-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 14px;
+            }
+            .notif-title {
+                font-size: 18px;
+                font-weight: 800;
+                color: var(--sidebar);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .badge-pendientes {
+                background: #ef4444;
+                color: white;
+                font-size: 12px;
+                font-weight: 700;
+                padding: 3px 10px;
+                border-radius: 20px;
+                animation: pulse 2s infinite;
+            }
+            @keyframes pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.7; }
+            }
+
+            /* Tarjeta de notificación pendiente */
+            .notif-card {
+                background: white;
+                border: 1px solid #e2e8f0;
+                border-left: 4px solid #ef4444;
+                border-radius: 14px;
+                padding: 18px 20px;
+                margin-bottom: 12px;
+                display: flex;
+                align-items: flex-start;
+                gap: 16px;
+                box-shadow: 0 4px 15px rgba(239, 68, 68, 0.08);
+                transition: all 0.3s ease;
+            }
+            .notif-card:hover { box-shadow: 0 6px 20px rgba(239, 68, 68, 0.15); }
+            .notif-card.entregado {
+                border-left-color: #22c55e;
+                box-shadow: 0 2px 8px rgba(34,197,94,0.06);
+                opacity: 0.75;
+            }
+            .notif-dot {
+                width: 12px; height: 12px;
+                border-radius: 50%;
+                flex-shrink: 0;
+                margin-top: 4px;
+            }
+            .dot-red   { background: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.2); }
+            .dot-green { background: #22c55e; }
+
+            .notif-emoji { font-size: 32px; flex-shrink: 0; }
+            .notif-body  { flex: 1; }
+            .notif-body strong { display: block; font-size: 15px; color: var(--sidebar); margin-bottom: 3px; }
+            .notif-body .notif-meta { font-size: 12px; color: var(--text-light); line-height: 1.6; }
+            .notif-body .notif-pts  { display: inline-block; font-size: 13px; font-weight: 700; color: #ef4444; margin-top: 4px; }
+
+            .btn-entregar {
+                padding: 10px 18px;
+                background: linear-gradient(135deg, #22c55e, #10b981);
+                color: white;
+                border: none;
+                border-radius: 10px;
+                cursor: pointer;
+                font-size: 13px;
+                font-weight: 700;
+                white-space: nowrap;
+                transition: all 0.2s;
+                box-shadow: 0 4px 12px rgba(34,197,94,0.3);
+            }
+            .btn-entregar:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(34,197,94,0.4); }
+            .tag-entregado {
+                padding: 8px 14px;
+                background: #f0fdf4;
+                color: #16a34a;
+                border: 1px solid #bbf7d0;
+                border-radius: 10px;
+                font-size: 12px;
+                font-weight: 700;
+                white-space: nowrap;
+            }
+            .sin-notif {
+                text-align: center;
+                padding: 30px 20px;
+                background: #f8fafc;
+                border-radius: 14px;
+                color: var(--text-light);
+                font-size: 14px;
+            }
+            .sin-notif i { font-size: 36px; opacity: 0.3; display: block; margin-bottom: 10px; }
+
+            /* ── Artículos de tienda ── */
+            .items-section { margin-bottom: 30px; }
+            .items-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 14px;
+            }
+            .items-title { font-size: 18px; font-weight: 800; color: var(--sidebar); }
+
+            .btn-add-item {
+                padding: 10px 20px;
+                background: var(--primary);
+                color: white;
+                border: none;
+                border-radius: 10px;
+                cursor: pointer;
+                font-size: 13px;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                transition: all 0.2s;
+            }
+            .btn-add-item:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+            .item-admin-row {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                padding: 18px 20px;
+                border-bottom: 1px solid #f1f5f9;
+                transition: background 0.2s;
+            }
+            .item-admin-row:last-child { border-bottom: none; }
+            .item-admin-row:hover { background: #f8fafc; }
+            .item-icon-box {
+                font-size: 28px;
+                width: 56px; height: 56px;
+                border-radius: 12px;
+                background: #f8fafc;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            .item-info { flex: 1; }
+            .item-info h4 { font-size: 15px; color: var(--sidebar); margin-bottom: 3px; font-weight: 700; }
+            .item-info p  { font-size: 13px; color: var(--text-light); }
+            .item-costo   { font-size: 18px; font-weight: 800; color: var(--sidebar); min-width: 80px; text-align: center; }
+            .item-acciones { display: flex; gap: 8px; flex-shrink: 0; }
+
+            .btn-toggle {
+                padding: 7px 14px;
+                border-radius: 20px;
+                border: 2px solid;
+                cursor: pointer;
+                font-size: 12px;
+                font-weight: 700;
+                transition: all 0.2s;
+            }
+            .btn-toggle.activo  { border-color: var(--primary); color: var(--primary); background: #f0fdf4; }
+            .btn-toggle.activo:hover  { background: var(--primary); color: white; }
+            .btn-toggle.inactivo { border-color: #94a3b8; color: #94a3b8; background: #f8fafc; }
+            .btn-toggle.inactivo:hover { border-color: var(--primary); color: var(--primary); }
+            .btn-edit {
+                padding: 7px 12px;
+                border-radius: 8px;
+                border: 1px solid #e2e8f0;
+                background: white;
+                cursor: pointer;
+                font-size: 13px;
+                color: #64748b;
+                transition: all 0.2s;
+            }
+            .btn-edit:hover { background: #f1f5f9; }
+            .btn-delete {
+                padding: 7px 12px;
+                border-radius: 8px;
+                border: 1px solid #fecaca;
+                background: #fef2f2;
+                cursor: pointer;
+                font-size: 13px;
+                color: #ef4444;
+                transition: all 0.2s;
+            }
+            .btn-delete:hover { background: #fee2e2; }
+
+            /* ── Historial de canjes ── */
+            .canjes-hist-row {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                padding: 14px 0;
+                border-bottom: 1px solid #f1f5f9;
+            }
+            .canjes-hist-row:last-child { border-bottom: none; }
+            .badge-est {
+                padding: 4px 12px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: 700;
+            }
+            .badge-pendiente { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+            .badge-entregado { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+
+            /* ── Modal agregar/editar item ── */
+            .modal-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.55);
+                backdrop-filter: blur(4px);
+                z-index: 1000;
+                align-items: center;
+                justify-content: center;
+            }
+            .modal-overlay.open { display: flex; }
+            .modal-box {
+                background: white;
+                border-radius: 20px;
+                padding: 32px;
+                width: 440px;
+                max-width: 95vw;
+                box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+                animation: popIn 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+            @keyframes popIn {
+                from { transform: scale(0.88); opacity: 0; }
+                to   { transform: scale(1);   opacity: 1; }
+            }
+            .modal-box h3 { font-size: 18px; font-weight: 800; color: var(--sidebar); margin-bottom: 20px; }
+            .form-group    { margin-bottom: 16px; }
+            .form-label    { display: block; font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+            .form-input {
+                width: 100%;
+                padding: 10px 14px;
+                border-radius: 10px;
+                border: 2px solid #e2e8f0;
+                font-size: 14px;
+                transition: border-color 0.2s;
+                box-sizing: border-box;
+                font-family: inherit;
+            }
+            .form-input:focus { outline: none; border-color: var(--primary); }
+            .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+            .btn-save {
+                flex: 1;
+                padding: 12px;
+                background: var(--primary);
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-size: 14px;
+                font-weight: 700;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+            .btn-save:hover { background: var(--primary-dark); }
+            .btn-cancel {
+                flex: 1;
+                padding: 12px;
+                background: #f1f5f9;
+                color: #64748b;
+                border: none;
+                border-radius: 10px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+            .btn-cancel:hover { background: #e2e8f0; }
+            .form-error { font-size: 12px; color: #ef4444; margin-top: 8px; display: none; }
+
+            /* Puntos box */
+            .puntos-box {
+                background: linear-gradient(135deg, var(--primary), #10b981);
+                color: white;
+                border-radius: 16px;
+                padding: 16px 24px;
+                display: inline-flex;
+                align-items: center;
+                gap: 14px;
+                margin-bottom: 25px;
+            }
+            .puntos-box .pts-valor { font-size: 36px; font-weight: 900; line-height: 1; }
+            .puntos-box .pts-label { font-size: 13px; opacity: 0.9; }
+
+            /* Toast general */
+            .toast-global {
+                position: fixed;
+                bottom: 25px;
+                right: 25px;
+                background: #1e293b;
+                color: white;
+                padding: 14px 22px;
+                border-radius: 12px;
+                font-size: 14px;
+                font-weight: 600;
+                display: none;
+                align-items: center;
+                gap: 10px;
+                z-index: 9999;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+                max-width: 320px;
+            }
+        </style>
+    </head>
+    <body>
+        <nav>
+            <div class="admin-nav-header">
+                <div class="brand" style="padding-bottom:0; border-bottom:none; margin-bottom:0;">
+                    <i class="fas fa-leaf"></i> NutriTrack
+                </div>
+                <p><i class="fas fa-shield-alt"></i> Panel Admin</p>
+            </div>
+            <ul>
+                <li><a href="admin-panel.html"><i class="fas fa-tachometer-alt"></i> Resumen General</a></li>
+                <li><a href="admin-historial.html"><i class="fas fa-history"></i> Historial Detallado</a></li>
+                <li><a href="admin-tienda.html" class="active"><i class="fas fa-store"></i> Control de Tienda
+                    <span id="nav-notif-badge" style="display:none;background:#ef4444;color:white;font-size:10px;padding:1px 6px;border-radius:20px;margin-left:4px;font-weight:700;">0</span>
+                </a></li>
+            </ul>
+            <a href="#" class="btn-logout" onclick="cerrarSesion()">
+                <i class="fas fa-sign-out-alt" style="margin-right:8px;"></i> Cerrar Sesión
+            </a>
+        </nav>
+
+        <div class="content">
+            <h2 class="animate-fade">
+                Control de Tienda
+                <span class="admin-badge"><i class="fas fa-crown" style="margin-right:4px;"></i> Admin</span>
+            </h2>
+            <p style="color:var(--text-light); margin-bottom:20px;">
+                Gestiona artículos y aprueba los canjes de Naythan (Mivida).
+            </p>
+
+            <!-- Puntos actuales del usuario -->
+            <div class="puntos-box animate-fade">
+                <i class="fas fa-coins" style="font-size:28px;"></i>
+                <div>
+                    <div class="pts-valor" id="pts-usuario">—</div>
+                    <div class="pts-label">Puntos disponibles de Naythan</div>
+                </div>
+            </div>
+
+            <!-- ── NOTIFICACIONES DE CANJE (persistentes) ── -->
+            <div class="notif-section animate-fade delay-1">
+                <div class="notif-header">
+                    <div class="notif-title">
+                        <i class="fas fa-bell" style="color:#ef4444;"></i>
+                        Solicitudes de Canje
+                        <span class="badge-pendientes" id="badge-pendientes" style="display:none;">0 pendientes</span>
+                    </div>
+                </div>
+                <div id="notif-lista-pendientes">
+                    <!-- Generado por JS -->
+                </div>
+                <!-- Entregados recientes (colapsables) -->
+                <div id="notif-entregados-wrap" style="margin-top:12px; display:none;">
+                    <div style="font-size:12px;color:var(--text-light);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">
+                        <i class="fas fa-check-circle" style="color:#22c55e;margin-right:4px;"></i> Entregados recientes
+                    </div>
+                    <div id="notif-lista-entregados"></div>
+                </div>
+            </div>
+
+            <!-- ── ARTÍCULOS DE LA TIENDA ── -->
+            <div class="items-section animate-fade delay-2">
+                <div class="items-header">
+                    <div class="items-title">
+                        <i class="fas fa-boxes" style="color:var(--primary);margin-right:8px;"></i>
+                        Artículos del Mercado
+                    </div>
+                    <button class="btn-add-item" onclick="abrirModal()">
+                        <i class="fas fa-plus"></i> Agregar artículo
+                    </button>
+                </div>
+                <div class="card" style="padding:0; overflow:hidden;" id="items-lista">
+                    <!-- Generado por JS -->
+                </div>
+            </div>
+
+            <!-- ── HISTORIAL COMPLETO DE CANJES ── -->
+            <div class="animate-fade delay-3">
+                <div style="font-size:18px;font-weight:800;color:var(--sidebar);margin-bottom:14px;">
+                    <i class="fas fa-history" style="color:var(--primary);margin-right:8px;"></i>
+                    Historial Completo de Canjes
+                </div>
+                <div class="card" style="padding:0 20px;" id="historial-canjes-lista">
+                    <!-- Generado por JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal agregar / editar item -->
+        <div class="modal-overlay" id="modal-item">
+            <div class="modal-box">
+                <h3 id="modal-titulo">Agregar artículo</h3>
+                <div class="form-group">
+                    <label class="form-label">Emoji o ícono</label>
+                    <input type="text" class="form-input" id="mi-emoji" placeholder="☕" maxlength="4" style="width:80px;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nombre del artículo</label>
+                    <input type="text" class="form-input" id="mi-nombre" placeholder="Ej: Bebida extra">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descripción</label>
+                    <input type="text" class="form-input" id="mi-desc" placeholder="Descripción breve para el usuario">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Costo en puntos</label>
+                    <input type="number" class="form-input" id="mi-costo" placeholder="250" min="1" style="max-width:160px;">
+                </div>
+                <div class="form-error" id="modal-error">Por favor completa todos los campos correctamente.</div>
+                <div class="modal-actions">
+                    <button class="btn-save" onclick="guardarItem()">
+                        <i class="fas fa-check" style="margin-right:6px;"></i> Guardar
+                    </button>
+                    <button class="btn-cancel" onclick="cerrarModal()">
+                        <i class="fas fa-times" style="margin-right:6px;"></i> Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast -->
+        <div class="toast-global" id="toast-global">
+            <i class="fas fa-check-circle" style="color:#22c55e;font-size:18px;"></i>
+            <span id="toast-global-msg"></span>
+        </div>
+
+        <script src="nt-store.js"></script>
+<script>
+    let editingId = null;
+
+    (async function init() {
+        if (!NTStore.requireAuth('admin')) return;
+        await renderTodo();
+        setInterval(renderTodo, 5000);
+    })();
+
+    function cerrarSesion() {
+        NTStore.clearSession();
+        location.href = 'login.html';
+    }
+
+    async function renderTodo() {
+    const res = await fetch('/nutritrack/api/usuario.php?username=Mivida');
+    const userData = await res.json();
+    const pts = userData.ok ? userData.usuario.puntos : 0;
+    document.getElementById('pts-usuario').textContent = pts;
+    renderNotificaciones();
+    renderItems();
+    renderHistorialCanjes();
+    actualizarBadgeNav();
+}
+
+    function actualizarBadgeNav() {
+        const p = NTStore.getCanjesPendientes().length;
+        const b = document.getElementById('nav-notif-badge');
+        if (b) { b.style.display = p > 0 ? 'inline' : 'none'; b.textContent = p; }
+    }
+
+    function renderNotificaciones() {
+        const canjes     = NTStore.getCanjes();
+        const pendientes = canjes.filter(c => c.estado === 'pendiente');
+        const entregados = canjes.filter(c => c.estado === 'entregado');
+
+        const badgeEl = document.getElementById('badge-pendientes');
+        if (pendientes.length > 0) {
+            badgeEl.style.display = 'inline-block';
+            badgeEl.textContent   = pendientes.length + (pendientes.length === 1 ? ' pendiente' : ' pendientes');
+        } else {
+            badgeEl.style.display = 'none';
+        }
+
+        const lp = document.getElementById('notif-lista-pendientes');
+        lp.innerHTML = '';
+        if (!pendientes.length) {
+            lp.innerHTML = `<div class="sin-notif">
+                <i class="fas fa-bell-slash"></i>
+                Sin solicitudes de canje pendientes
+            </div>`;
+        } else {
+            pendientes.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'notif-card';
+                div.innerHTML = `
+                    <div class="notif-dot dot-red"></div>
+                    <div class="notif-emoji">${c.emoji}</div>
+                    <div class="notif-body">
+                        <strong>${c.nombre}</strong>
+                        <div class="notif-meta">
+                            Solicitado por <strong>Naythan</strong> · ${c.fecha} a las ${c.hora}<br>
+                            Puntos descontados: <span class="notif-pts">-${c.costo} pts</span>
+                        </div>
+                    </div>
+                    <button class="btn-entregar" onclick="marcarEntregado(${c.id})">
+                        <i class="fas fa-check" style="margin-right:5px;"></i> Marcar entregado
+                    </button>
+                `;
+                lp.appendChild(div);
+            });
+        }
+
+        const wrapEl = document.getElementById('notif-entregados-wrap');
+        const le     = document.getElementById('notif-lista-entregados');
+        le.innerHTML = '';
+        if (entregados.length > 0) {
+            wrapEl.style.display = 'block';
+            [...entregados].reverse().slice(0, 3).forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'notif-card entregado';
+                div.innerHTML = `
+                    <div class="notif-dot dot-green"></div>
+                    <div class="notif-emoji">${c.emoji}</div>
+                    <div class="notif-body">
+                        <strong>${c.nombre}</strong>
+                        <div class="notif-meta">${c.fecha} · ${c.hora}</div>
+                    </div>
+                    <span class="tag-entregado">
+                        <i class="fas fa-check-circle" style="margin-right:4px;color:#22c55e;"></i> Entregado
+                    </span>
+                `;
+                le.appendChild(div);
+            });
+        } else {
+            wrapEl.style.display = 'none';
+        }
+    }
+
+    function marcarEntregado(id) {
+        NTStore.marcarEntregado(id);
+        mostrarToast('✅ Canje marcado como entregado');
+        renderTodo();
+    }
+
+    function renderItems() {
+        const items = NTStore.getItems();
+        const lista = document.getElementById('items-lista');
+        lista.innerHTML = '';
+        if (!items.length) {
+            lista.innerHTML = '<div style="padding:30px;text-align:center;color:#94a3b8;">No hay artículos.</div>';
+            return;
+        }
+        items.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'item-admin-row';
+            div.innerHTML = `
+                <div class="item-icon-box">${item.emoji}</div>
+                <div class="item-info">
+                    <h4>${item.nombre}</h4>
+                    <p>${item.desc}</p>
+                </div>
+                <div class="item-costo">${item.costo} pts</div>
+                <div style="margin:0 8px;">
+                    <span class="badge ${item.activo ? 'bg-green' : 'bg-red'}" style="font-size:11px;">
+                        ${item.activo ? 'Activo' : 'Inactivo'}
+                    </span>
+                </div>
+                <div class="item-acciones">
+                    <button class="btn-toggle ${item.activo ? 'activo' : 'inactivo'}" onclick="toggleItem(${item.id})">
+                        <i class="fas fa-${item.activo ? 'eye-slash' : 'eye'}" style="margin-right:4px;"></i>
+                        ${item.activo ? 'Desactivar' : 'Activar'}
+                    </button>
+                    <button class="btn-edit" onclick="abrirEditar(${item.id})"><i class="fas fa-pen"></i></button>
+                    <button class="btn-delete" onclick="eliminarItem(${item.id})"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            lista.appendChild(div);
+        });
+    }
+
+    function toggleItem(id) {
+        const item = NTStore.toggleItem(id);
+        mostrarToast(`Artículo ${item.activo ? 'activado ✅' : 'desactivado 🚫'}`);
+        renderItems();
+    }
+
+    function eliminarItem(id) {
+        if (!confirm('¿Seguro que quieres eliminar este artículo?')) return;
+        NTStore.deleteItem(id);
+        mostrarToast('Artículo eliminado');
+        renderItems();
+    }
+
+    function renderHistorialCanjes() {
+        const canjes = NTStore.getCanjes();
+        const lista  = document.getElementById('historial-canjes-lista');
+        lista.innerHTML = '';
+        if (!canjes.length) {
+            lista.innerHTML = '<div style="padding:24px;text-align:center;color:#94a3b8;font-size:13px;">Sin canjes registrados.</div>';
+            return;
+        }
+        [...canjes].reverse().forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'canjes-hist-row';
+            div.innerHTML = `
+                <span style="font-size:22px;">${c.emoji}</span>
+                <div style="flex:1;">
+                    <strong style="display:block;font-size:14px;color:var(--sidebar);">${c.nombre}</strong>
+                    <span style="font-size:12px;color:var(--text-light);">${c.fecha} · ${c.hora}</span>
+                </div>
+                <span style="font-size:14px;font-weight:700;color:#ef4444;">-${c.costo} pts</span>
+                <span class="badge-est ${c.estado === 'entregado' ? 'badge-entregado' : 'badge-pendiente'}">
+                    ${c.estado === 'entregado'
+                        ? '<i class="fas fa-check" style="margin-right:3px;"></i>Entregado'
+                        : '<i class="fas fa-clock" style="margin-right:3px;"></i>Pendiente'}
+                </span>
+            `;
+            lista.appendChild(div);
+        });
+    }
+
+    function abrirModal() {
+        editingId = null;
+        document.getElementById('modal-titulo').textContent = 'Agregar artículo';
+        document.getElementById('mi-emoji').value  = '';
+        document.getElementById('mi-nombre').value = '';
+        document.getElementById('mi-desc').value   = '';
+        document.getElementById('mi-costo').value  = '';
+        document.getElementById('modal-error').style.display = 'none';
+        document.getElementById('modal-item').classList.add('open');
+    }
+
+    function abrirEditar(id) {
+        const item = NTStore.getItems().find(i => i.id === id);
+        if (!item) return;
+        editingId = id;
+        document.getElementById('modal-titulo').textContent = 'Editar artículo';
+        document.getElementById('mi-emoji').value  = item.emoji;
+        document.getElementById('mi-nombre').value = item.nombre;
+        document.getElementById('mi-desc').value   = item.desc;
+        document.getElementById('mi-costo').value  = item.costo;
+        document.getElementById('modal-error').style.display = 'none';
+        document.getElementById('modal-item').classList.add('open');
+    }
+
+    function cerrarModal() {
+        document.getElementById('modal-item').classList.remove('open');
+        editingId = null;
+    }
+
+    function guardarItem() {
+        const emoji  = document.getElementById('mi-emoji').value.trim()  || '🎁';
+        const nombre = document.getElementById('mi-nombre').value.trim();
+        const desc   = document.getElementById('mi-desc').value.trim();
+        const costo  = parseInt(document.getElementById('mi-costo').value) || 0;
+        const errEl  = document.getElementById('modal-error');
+        if (!nombre || costo <= 0) { errEl.style.display = 'block'; return; }
+        errEl.style.display = 'none';
+        if (editingId !== null) {
+            NTStore.updateItem(editingId, nombre, desc, costo, emoji);
+            mostrarToast('Artículo actualizado ✅');
+        } else {
+            NTStore.addItem(nombre, desc, costo, emoji);
+            mostrarToast('Artículo agregado ✅');
+        }
+        cerrarModal();
+        renderItems();
+    }
+
+    function mostrarToast(msg) {
+        const t = document.getElementById('toast-global');
+        document.getElementById('toast-global-msg').textContent = msg;
+        t.style.display = 'flex';
+        setTimeout(() => t.style.display = 'none', 2500);
+    }
+
+    document.getElementById('modal-item').addEventListener('click', function(e) {
+        if (e.target === this) cerrarModal();
+    });
+</script>
+    </body>
+    </html>

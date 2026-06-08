@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Admin - NutriTrack</title>
+    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        .admin-nav-header {
+            padding: 20px 25px 10px;
+            border-bottom: 1px solid #1e293b;
+            margin-bottom: 10px;
+        }
+        .admin-nav-header p {
+            color: #f59e0b;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 5px;
+        }
+        .btn-logout {
+            display: block;
+            margin: 20px 15px 10px;
+            padding: 12px 20px;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .btn-logout:hover { background: rgba(239, 68, 68, 0.2); }
+        .user-profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .user-avatar {
+            width: 72px; height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: white;
+            font-weight: 900;
+            flex-shrink: 0;
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+        }
+        .user-info h3 { font-size: 22px; color: var(--sidebar); margin-bottom: 4px; }
+        .user-info p  { color: var(--text-light); font-size: 14px; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .stat-card .stat-icon  { font-size: 26px; margin-bottom: 10px; }
+        .stat-card .stat-value { font-size: 28px; font-weight: 900; color: var(--sidebar); line-height: 1; margin-bottom: 5px; }
+        .stat-card .stat-label { font-size: 12px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .stat-card .stat-sub   { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+        .section-title {
+            font-size: 18px; font-weight: 800; color: var(--sidebar);
+            margin-bottom: 15px; display: flex; align-items: center; gap: 10px;
+        }
+        .section-title i { color: var(--primary); }
+        .chart-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            margin-bottom: 25px;
+        }
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            height: 180px;
+            padding-bottom: 30px;
+            position: relative;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .bar-group {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; height: 100%; justify-content: flex-end; gap: 6px;
+        }
+        .bar {
+            width: 100%; border-radius: 8px 8px 0 0;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative; cursor: pointer;
+        }
+        .bar:hover { filter: brightness(1.1); }
+        .bar-value { font-size: 11px; font-weight: 700; color: var(--sidebar); text-align: center; }
+        .bar-day {
+            font-size: 11px; color: var(--text-light); font-weight: 600;
+            position: absolute; bottom: -22px; text-align: center; width: 100%;
+        }
+        .bar-positive { background: linear-gradient(180deg, #22c55e, #16a34a); }
+        .bar-neutral  { background: linear-gradient(180deg, #94a3b8, #64748b); }
+        .table-historial th { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); }
+        .row-positive td { border-left: 3px solid #22c55e; }
+        .row-negative td { border-left: 3px solid #ef4444; }
+        .progress-bar-wrap { background: #f1f5f9; border-radius: 20px; height: 12px; overflow: hidden; margin-top: 8px; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #22c55e, #10b981); border-radius: 20px; transition: width 1s ease; }
+        .semaforo { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+        .semaforo-verde { background: #22c55e; }
+        .semaforo-rojo  { background: #ef4444; }
+        .alert-card {
+            background: linear-gradient(135deg, #fef9c3, #fef3c7);
+            border: 1px solid #fde68a;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #92400e;
+        }
+        .alert-card i { font-size: 20px; color: #f59e0b; }
+        .alert-card.danger {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border-color: #fecaca;
+            color: #991b1b;
+        }
+        .alert-card.danger i { color: #ef4444; }
+
+        /* Badge multiplicador inline */
+        .mult-pill {
+            display: inline-block;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="admin-nav-header">
+            <div class="brand" style="padding-bottom:0; border-bottom:none; margin-bottom:0;">
+                <i class="fas fa-leaf"></i> NutriTrack
+            </div>
+            <p><i class="fas fa-shield-alt"></i> Panel Admin</p>
+        </div>
+        <ul>
+            <li><a href="admin-panel.html" class="active"><i class="fas fa-tachometer-alt"></i> Resumen General</a></li>
+            <li><a href="admin-historial.html"><i class="fas fa-history"></i> Historial Detallado</a></li>
+            <li><a href="admin-tienda.html"><i class="fas fa-store"></i> Control de Tienda
+                <span id="nav-notif-badge" style="display:none;background:#ef4444;color:white;font-size:10px;padding:1px 6px;border-radius:20px;margin-left:4px;font-weight:700;">0</span>
+            </a></li>
+        </ul>
+        <a href="#" class="btn-logout" onclick="cerrarSesion()">
+            <i class="fas fa-sign-out-alt" style="margin-right:8px;"></i> Cerrar Sesión
+        </a>
+    </nav>
+
+    <div class="content">
+        <div style="display:flex; align-items:center; margin-bottom:25px;">
+            <div>
+                <h2 style="margin-bottom:4px;">
+                    Panel de Administración
+                    <span class="admin-badge"><i class="fas fa-crown" style="margin-right:4px;"></i> Admin</span>
+                </h2>
+                <p style="color:var(--text-light); font-size:14px;">
+                    Sesión como: <strong>Admin</strong> &mdash; Viendo datos de: <strong>Mivida (Naythan)</strong>
+                </p>
+            </div>
+        </div>
+
+        <!-- Alertas dinámicas -->
+        <div id="alertas-container"></div>
+
+        <!-- Perfil del usuario -->
+        <div class="card animate-fade delay-1">
+            <div class="user-profile-header">
+                <div class="user-avatar">N</div>
+                <div class="user-info">
+                    <h3>Naythan <span style="font-size:14px; color:var(--text-light);">(Mivida)</span></h3>
+                    <p>
+                        <i class="fas fa-fire" style="color:#f59e0b;"></i>
+                        Racha: <strong id="perfil-racha">—</strong> días
+                        <span class="mult-pill" id="perfil-mult-pill">×1.0</span>
+                        &nbsp;|&nbsp;
+                        <i class="fas fa-star" style="color:#f59e0b;"></i>
+                        Puntos totales: <strong id="user-puntos-total">—</strong>
+                        &nbsp;|&nbsp;
+                        <i class="fas fa-bullseye" style="color:var(--primary);"></i>
+                        Meta: <strong>300 pts/día</strong>
+                    </p>
+                    <div class="progress-bar-wrap" style="max-width:300px;">
+                        <div class="progress-bar-fill" id="progress-meta" style="width:0%;"></div>
+                    </div>
+                    <p style="font-size:12px; margin-top:4px; color:var(--text-light);" id="progress-meta-txt">0% de meta diaria</p>
+                    <p style="font-size:11px; margin-top:4px; color:#94a3b8;" id="perfil-racha-prox"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="stats-grid animate-fade delay-2">
+            <div class="stat-card">
+                <div class="stat-icon" style="color:#22c55e;">🌿</div>
+                <div class="stat-value" style="color:#22c55e;" id="kpi-puntos">—</div>
+                <div class="stat-label">Puntos acumulados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color:#f59e0b;">🔥</div>
+                <div class="stat-value" style="color:#f59e0b;" id="kpi-racha">—</div>
+                <div class="stat-label">Días de racha</div>
+                <div class="stat-sub" id="kpi-mult-sub"></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color:#ef4444;">⚠️</div>
+                <div class="stat-value" style="color:#ef4444;" id="kpi-sin-reg">—</div>
+                <div class="stat-label">Comidas sin registrar hoy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color:#8b5cf6;">🔔</div>
+                <div class="stat-value" style="color:#8b5cf6;" id="kpi-canjes-p">—</div>
+                <div class="stat-label">Canjes pendientes</div>
+            </div>
+        </div>
+
+        <!-- Gráfica -->
+        <div class="chart-container animate-fade delay-3">
+            <div class="section-title"><i class="fas fa-chart-bar"></i> Puntos por Día (Semana Actual)</div>
+            <div class="bar-chart" id="chart-puntos"></div>
+        </div>
+
+        <!-- Últimos registros -->
+        <div class="chart-container animate-fade delay-3">
+            <div class="section-title"><i class="fas fa-utensils"></i> Últimos Registros de Comida</div>
+            <table class="table-historial">
+                <thead>
+                    <tr>
+                        <th>Estado</th>
+                        <th>Alimento</th>
+                        <th>Tipo</th>
+                        <th>Hora</th>
+                        <th>Porción</th>
+                        <th>Puntos</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-registros"></tbody>
+            </table>
+        </div>
+
+        <!-- Distribución y cumplimiento -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+            <div class="chart-container animate-fade">
+                <div class="section-title"><i class="fas fa-check-circle"></i> Cumplimiento por Tipo de Comida</div>
+                <div id="cumplimiento-lista"></div>
+            </div>
+            <div class="chart-container animate-fade">
+                <div class="section-title"><i class="fas fa-exchange-alt"></i> Últimos Canjes</div>
+                <div id="ultimos-canjes"></div>
+            </div>
+        </div>
+    </div>
+
+<script src="nt-store.js"></script>
+    <script>
+        const META = 300;
+
+        (function init() {
+            if (!NTStore.requireAuth('admin')) return;
+            cargarPanel();
+            actualizarBadgeNav();
+            setInterval(() => { actualizarBadgeNav(); }, 5000);
+        })();
+
+        function cerrarSesion() {
+            NTStore.clearSession();
+            location.href = 'login.html';
+        }
+
+        function actualizarBadgeNav() {
+            const p = NTStore.getCanjesPendientes().length;
+            const b = document.getElementById('nav-notif-badge');
+            if (b) { b.style.display = p > 0 ? 'inline' : 'none'; b.textContent = p; }
+        }
+
+        async function cargarPanel() {
+    const MIVIDA_UID = 2;
+
+    const [resDash, resResumen, resHistorial] = await Promise.all([
+        fetch(`/nutritrack/api/dashboard.php?usuario_id=${MIVIDA_UID}`).then(r => r.json()),
+        fetch(`/nutritrack/api/resumen_dia.php?usuario_id=${MIVIDA_UID}`).then(r => r.json()),
+        fetch(`/nutritrack/api/historial.php?usuario_id=${MIVIDA_UID}&semana=1`).then(r => r.json()),
+    ]);
+
+    // ... resto del código igual
+
+            if (!resDash.ok) {
+                document.getElementById('alertas-container').innerHTML =
+                    `<div class="alert-card danger"><i class="fas fa-exclamation-circle"></i><div>Error al cargar datos: ${resDash.error}</div></div>`;
+                return;
+            }
+
+            const { usuario, semana, grafica } = resDash;
+            const racha      = usuario.racha_dias;
+            const pts        = usuario.puntos;
+            const mult       = NTStore.calcMultiplicador(racha);
+            const multStr    = mult.toFixed(1);
+            const ptsHoy     = resResumen.ok ? resResumen.puntos_hoy  : 0;
+            const metaDiaria = resResumen.ok ? resResumen.meta_diaria : META;
+            const comidasHoy = resResumen.ok ? resResumen.comidas_hoy : {};
+            const regs       = resHistorial.ok ? resHistorial.registros : [];
+            const canjesPend = NTStore.getCanjesPendientes();
+            const sinReg     = ['Desayuno','Comida','Cena'].filter(t => !comidasHoy[t]).length;
+            const pct        = Math.min(100, Math.round((ptsHoy / metaDiaria) * 100));
+
+            // ── Perfil ──────────────────────────────────────────
+            document.getElementById('user-puntos-total').textContent = pts + ' pts';
+            document.getElementById('perfil-racha').textContent      = racha;
+            document.getElementById('perfil-mult-pill').textContent  = '×' + multStr;
+            document.getElementById('perfil-mult-pill').style.display = mult > 1.0 ? 'inline-block' : 'none';
+
+            const diasProx = 10 - (racha % 10);
+            const proxEl   = document.getElementById('perfil-racha-prox');
+            if (mult < 2.0) {
+                const sigMult = (mult + 0.1).toFixed(1);
+                proxEl.textContent = diasProx === 10
+                    ? `Nivel ×${multStr} activo — siguiente: ×${sigMult} en 10 días`
+                    : `Faltan ${diasProx} día${diasProx > 1 ? 's' : ''} para multiplicador ×${sigMult}`;
+            } else {
+                proxEl.textContent = '🏆 Multiplicador máximo ×2.0 alcanzado';
+            }
+
+            document.getElementById('progress-meta').style.width     = pct + '%';
+            document.getElementById('progress-meta-txt').textContent = `${pct}% de meta diaria (${ptsHoy}/${metaDiaria} pts)`;
+
+            // ── KPIs ────────────────────────────────────────────
+            document.getElementById('kpi-puntos').textContent   = pts;
+            document.getElementById('kpi-racha').textContent    = racha;
+            document.getElementById('kpi-sin-reg').textContent  = sinReg;
+            document.getElementById('kpi-canjes-p').textContent = canjesPend.length;
+
+            const multSubEl = document.getElementById('kpi-mult-sub');
+            multSubEl.textContent = mult > 1.0 ? 'Multiplicador ×' + multStr + ' activo 🔥' : 'Sin multiplicador aún';
+            multSubEl.style.color = mult > 1.0 ? '#f59e0b' : '#94a3b8';
+
+            // ── Alertas ─────────────────────────────────────────
+            const alertCont = document.getElementById('alertas-container');
+            alertCont.innerHTML = '';
+            if (sinReg > 0) {
+                alertCont.innerHTML += `<div class="alert-card animate-fade">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>Naythan tiene <strong>${sinReg} comida${sinReg > 1 ? 's' : ''}</strong> sin registrar hoy.</div>
+                </div>`;
+            }
+            if (canjesPend.length > 0) {
+                alertCont.innerHTML += `<div class="alert-card danger animate-fade">
+                    <i class="fas fa-bell"></i>
+                    <div>Hay <strong>${canjesPend.length} canje${canjesPend.length > 1 ? 's' : ''} pendiente${canjesPend.length > 1 ? 's' : ''}</strong> de entrega.
+                    <a href="admin-tienda.html" style="margin-left:8px;color:#ef4444;font-weight:700;text-decoration:underline;">Revisar →</a></div>
+                </div>`;
+            }
+
+            // ── Gráfica de barras ────────────────────────────────
+            const chart = document.getElementById('chart-puntos');
+            chart.innerHTML = '';
+            const maxPts = Math.max(...grafica.map(d => d.puntos), 1);
+            grafica.forEach(d => {
+                const pct2  = d.puntos > 0 ? Math.max((d.puntos / maxPts) * 100, 5) : 3;
+                const group = document.createElement('div');
+                group.className = 'bar-group';
+                group.innerHTML = `
+                    <span class="bar-value">${d.puntos > 0 ? d.puntos + ' pts' : '—'}</span>
+                    <div class="bar ${d.puntos > 0 ? 'bar-positive' : 'bar-neutral'}" style="height:${pct2}%;" title="${d.dia}: ${d.puntos} pts">
+                        <span class="bar-day">${d.dia}</span>
+                    </div>`;
+                chart.appendChild(group);
+            });
+
+            // ── Tabla últimos registros ──────────────────────────
+            const tbody = document.getElementById('tabla-registros');
+            tbody.innerHTML = '';
+            const ultimos = regs.slice(0, 6);
+            if (!ultimos.length) {
+                tbody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:#94a3b8;">Sin registros</td></tr>';
+            }
+            ultimos.forEach(r => {
+                const pos = r.puntos_asignados >= 0;
+                const tr  = document.createElement('tr');
+                tr.className = pos ? 'row-positive' : 'row-negative';
+                tr.innerHTML = `
+                    <td><span class="semaforo semaforo-${pos ? 'verde' : 'rojo'}"></span></td>
+                    <td><strong>${r.nombre_libre}</strong></td>
+                    <td><span style="color:var(--text-light);font-size:13px;">${r.tipo_comida}</span></td>
+                    <td>${r.hora}</td>
+                    <td><span style="font-size:11px;">${r.porcion}</span></td>
+                    <td><strong style="color:${pos ? 'var(--primary)' : '#ef4444'};">${pos ? '+' : ''}${r.puntos_asignados} pts</strong></td>`;
+                tbody.appendChild(tr);
+            });
+
+            // ── Cumplimiento semanal por tipo ────────────────────
+            const cumplDiv = document.getElementById('cumplimiento-lista');
+            cumplDiv.innerHTML = '';
+            const tipos7dias = [
+                { tipo: 'Desayuno', color: '#f472b6', icon: 'fa-sun' },
+                { tipo: 'Comida',   color: '#fbbf24', icon: 'fa-hamburger' },
+                { tipo: 'Cena',     color: '#38bdf8', icon: 'fa-moon' },
+            ];
+            tipos7dias.forEach(({ tipo, color, icon }) => {
+                const conteo = semana.filter(d => d.comidas[tipo] && d.comidas[tipo].registrado).length;
+                const pctC   = Math.round((conteo / 7) * 100);
+                cumplDiv.innerHTML += `
+                    <div style="margin-bottom:16px;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                            <span style="font-size:14px;font-weight:600;"><i class="fas ${icon}" style="color:${color};"></i> ${tipo}</span>
+                            <span style="font-size:13px;color:var(--text-light);">${conteo} / 7 días</span>
+                        </div>
+                        <div class="progress-bar-wrap">
+                            <div class="progress-bar-fill" style="width:${pctC}%;background:linear-gradient(90deg,${color},${color}cc);"></div>
+                        </div>
+                    </div>`;
+            });
+
+            // ── Últimos canjes ───────────────────────────────────
+            const canjesDiv = document.getElementById('ultimos-canjes');
+            const canjes    = NTStore.getCanjes();
+            canjesDiv.innerHTML = '';
+            if (!canjes.length) {
+                canjesDiv.innerHTML = '<p style="color:#94a3b8;font-size:13px;">Sin canjes registrados.</p>';
+            }
+            [...canjes].reverse().slice(0, 4).forEach(c => {
+                canjesDiv.innerHTML += `
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f1f5f9;">
+                        <span>${c.emoji} <strong>${c.nombre}</strong></span>
+                        <span class="badge ${c.estado === 'entregado' ? 'bg-green' : ''}"
+                              style="${c.estado !== 'entregado' ? 'background:#fef3c7;color:#92400e;' : ''}font-size:11px;">
+                            ${c.estado === 'entregado' ? 'Entregado' : 'Pendiente'}
+                        </span>
+                    </div>`;
+            });
+        }
+    </script>
+</body>
+</html>

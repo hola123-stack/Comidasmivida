@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tienda - NutriTrack</title>
+    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .btn-logout-user {
+            padding: 8px 16px;
+            background: rgba(239, 68, 68, 0.08);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+        .btn-logout-user:hover { background: rgba(239, 68, 68, 0.15); }
+
+        .puntos-display {
+            background: linear-gradient(135deg, var(--primary), #10b981);
+            color: white;
+            padding: 10px 22px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+            font-size: 15px;
+        }
+
+        /* Toast de confirmación de canje */
+        .canje-toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
+            font-weight: 600;
+            font-size: 15px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 9999;
+            max-width: 340px;
+        }
+
+        .btn-canjear {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            transition: 0.3s;
+            width: 100%;
+        }
+        .btn-canjear:hover { background-color: var(--primary-dark); transform: translateY(-2px); }
+
+        .btn-bloqueado {
+            background-color: #94a3b8;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: not-allowed;
+            font-size: 15px;
+            font-weight: bold;
+            width: 100%;
+            opacity: 0.7;
+        }
+
+        /* Estado de canje del ítem */
+        .item-canjeado-session {
+            background: #f0fdf4 !important;
+            border: 2px solid #bbf7d0 !important;
+        }
+
+        /* Historial de mis canjes */
+        .mis-canjes-section {
+            margin-top: 35px;
+        }
+        .mis-canjes-section h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--sidebar);
+            margin-bottom: 15px;
+        }
+        .canje-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+        }
+        .canje-row:last-child { border-bottom: none; }
+        .canje-emoji { font-size: 26px; flex-shrink: 0; }
+        .canje-info { flex: 1; }
+        .canje-info strong { display: block; color: var(--sidebar); font-size: 14px; }
+        .canje-info span { color: var(--text-light); font-size: 12px; }
+        .canje-pts { font-size: 14px; font-weight: 700; color: #ef4444; white-space: nowrap; }
+        .badge-estado {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .estado-pendiente  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .estado-entregado  { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+
+        .empty-canjes {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-light);
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+        .empty-canjes i { font-size: 36px; margin-bottom: 10px; opacity: 0.4; display: block; }
+
+        /* Sin artículos */
+        .sin-items {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="brand"><i class="fas fa-leaf"></i> NutriTrack</div>
+        <ul>
+            <li><a href="dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a></li>
+            <li><a href="registro.html"><i class="fas fa-plus-circle"></i> Registrar Comida</a></li>
+            <li><a href="historial.html"><i class="fas fa-history"></i> Historial</a></li>
+            <li><a href="tienda.html" class="active"><i class="fas fa-store"></i> Tienda</a></li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 class="animate-fade">Mercado de Recompensas</h2>
+            <div style="display:flex; gap:12px; align-items:center;">
+                <div class="puntos-display">
+                    <i class="fas fa-coins" style="margin-right:6px;"></i>
+                    Mis puntos: <span id="puntos-actuales">0</span> Pts
+                </div>
+                <a href="#" class="btn-logout-user" onclick="cerrarSesion()">
+                    <i class="fas fa-sign-out-alt" style="margin-right:6px;"></i> Salir
+                </a>
+            </div>
+        </div>
+
+        <!-- Grid de artículos -->
+        <div class="grid-tienda animate-fade" id="grid-tienda">
+            <!-- Generado por JS -->
+        </div>
+
+        <!-- Historial de mis canjes -->
+        <div class="mis-canjes-section animate-fade delay-2">
+            <h3><i class="fas fa-exchange-alt" style="color:var(--primary); margin-right:8px;"></i>Mis Canjes</h3>
+            <div class="card" id="mis-canjes-lista" style="padding:0 20px;">
+                <!-- Generado por JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="canje-toast" id="canje-toast">
+        <i class="fas fa-check-circle" style="font-size:20px;"></i>
+        <span id="canje-msg">¡Canje exitoso!</span>
+    </div>
+<script src="nt-store.js"></script>
+<script>
+    (async function() {
+        if (!NTStore.requireAuth('user')) return;
+        await renderTienda();
+        renderMisCanjes();
+    })();
+
+    function cerrarSesion() {
+        NTStore.clearSession();
+        location.href = 'login.html';
+    }
+
+    async function renderTienda() {
+        const userData = await NTStore.getUsuario();
+        const pts  = userData.ok ? userData.usuario.puntos : 0;
+        const items = NTStore.getItemsActivos();
+        const grid  = document.getElementById('grid-tienda');
+
+        document.getElementById('puntos-actuales').textContent = pts;
+        grid.innerHTML = '';
+
+        if (!items.length) {
+            grid.innerHTML = `<div class="sin-items" style="grid-column:1/-1;">
+                <i class="fas fa-store-slash" style="font-size:40px;opacity:0.3;display:block;margin-bottom:10px;"></i>
+                <p>No hay artículos disponibles.</p>
+            </div>`;
+            return;
+        }
+
+        items.forEach(item => {
+            const puedo = pts >= item.costo;
+            const div   = document.createElement('div');
+            div.className = 'card item-tienda';
+            div.id = `item-store-${item.id}`;
+            const iconMap = { '🎟️':'fa-ticket-alt','☕':'fa-coffee','🏅':'fa-medal','🎁':'fa-gift','⭐':'fa-star','🍕':'fa-pizza-slice' };
+            const icono = iconMap[item.emoji] || 'fa-box-open';
+            div.innerHTML = `
+                ${iconMap[item.emoji]
+                    ? `<i class="fas ${icono} item-icon" ${item.emoji==='🏅'?'style="color:#f59e0b;"':''}></i>`
+                    : `<div style="font-size:36px;margin-bottom:10px;">${item.emoji}</div>`
+                }
+                <h3>${item.nombre}</h3>
+                <p style="color:#64748b;font-size:14px;margin-top:10px;">${item.desc}</p>
+                <div class="precio">${item.costo} Pts</div>
+                ${puedo
+                    ? `<button class="btn-canjear" id="btn-store-${item.id}" onclick="canjearItem(${item.id})">
+                           <i class="fas fa-shopping-cart" style="margin-right:6px;"></i> Canjear Ahora
+                       </button>`
+                    : `<button class="btn-bloqueado" disabled>
+                           <i class="fas fa-lock" style="margin-right:6px;"></i> Puntos Insuficientes
+                       </button>`
+                }
+            `;
+            grid.appendChild(div);
+        });
+    }
+
+    
+        async function canjearItem(itemId) {
+    const btn = document.getElementById(`btn-store-${itemId}`);
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+    }
+
+    const result = await NTStore.canjear(itemId);
+
+    if (!result.ok) {
+        alert(result.error);
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right:6px;"></i> Canjear Ahora';
+        }
+        return;
+    }
+
+    const card = document.getElementById(`item-store-${itemId}`);
+    if (card) {
+        card.classList.add('item-canjeado-session');
+        if (btn) {
+            btn.className = 'btn-bloqueado';
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-check-circle" style="margin-right:6px;"></i> ¡Canjeado!';
+        }
+    }
+
+    document.getElementById('puntos-actuales').textContent = result.puntos;
+
+    const toast = document.getElementById('canje-toast');
+    document.getElementById('canje-msg').textContent = `¡Canjeaste: ${result.canje.nombre}! -${result.canje.costo} pts`;
+    toast.style.display = 'flex';
+    setTimeout(() => toast.style.display = 'none', 2800);
+
+    renderMisCanjes();
+}
+
+    function renderMisCanjes() {
+        const canjes = NTStore.getCanjes();
+        const lista  = document.getElementById('mis-canjes-lista');
+        if (!canjes.length) {
+            lista.innerHTML = `<div class="empty-canjes">
+                <i class="fas fa-shopping-bag"></i>
+                <p>Aún no has realizado ningún canje.</p>
+            </div>`;
+            return;
+        }
+        lista.innerHTML = '';
+        [...canjes].reverse().forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'canje-row';
+            div.innerHTML = `
+                <div class="canje-emoji">${c.emoji}</div>
+                <div class="canje-info">
+                    <strong>${c.nombre}</strong>
+                    <span>${c.fecha} · ${c.hora}</span>
+                </div>
+                <div class="canje-pts">-${c.costo} pts</div>
+                <span class="badge-estado ${c.estado==='entregado'?'estado-entregado':'estado-pendiente'}">
+                    ${c.estado==='entregado'
+                        ? '<i class="fas fa-check" style="margin-right:4px;"></i>Entregado'
+                        : '<i class="fas fa-clock" style="margin-right:4px;"></i>Pendiente'}
+                </span>
+            `;
+            lista.appendChild(div);
+        });
+    }
+</script>
+</body>
+</html>
