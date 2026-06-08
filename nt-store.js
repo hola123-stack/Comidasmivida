@@ -37,7 +37,7 @@ const NTStore = (() => {
 
     // ── Base URL de la API ──────────────────────────────────
     // Si tus archivos están en htdocs/nutritrack/, la API está en api/
-const API = '/nutritrack/api';
+const API = '/api';
 
     // ── Helpers de fecha ────────────────────────────────────
     function today() {
