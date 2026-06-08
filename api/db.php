@@ -1,13 +1,12 @@
 <?php
 date_default_timezone_set('America/Mexico_City');
 
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'nutritrack');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_NAME', getenv('DB_NAME') ?: 'nutritrack');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASS') ?: '');
 
 function getDB(): PDO {
-    // ... resto igual
     static $pdo = null;
     if ($pdo === null) {
         $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
@@ -21,7 +20,7 @@ function getDB(): PDO {
             http_response_code(500);
             echo json_encode([
                 'ok'    => false,
-                'error' => 'No se pudo conectar a la base de datos: ' . $e->getMessage()
+                'error' => 'No se pudo conectar: ' . $e->getMessage()
             ]);
             exit;
         }
