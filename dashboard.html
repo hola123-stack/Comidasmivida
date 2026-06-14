@@ -25,50 +25,68 @@
             text-decoration: none;
         }
         .btn-logout-user:hover { background: rgba(239, 68, 68, 0.15); }
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .kpi-card {
+
+        /* ── Widget cumplimiento ── */
+        .cumpl-widget {
             background: var(--card);
             border-radius: 20px;
-            padding: 28px 24px;
+            padding: 24px;
             border: 1px solid rgba(255,255,255,0.05);
-            position: relative;
+            margin-bottom: 30px;
+        }
+        .cumpl-widget-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: white;
+        }
+        .cumpl-widget-title i { color: #22c55e; font-size: 17px; }
+        .cumpl-row { margin-bottom: 18px; }
+        .cumpl-row:last-child { margin-bottom: 0; }
+        .cumpl-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 7px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+        }
+        .cumpl-header span:last-child { color: var(--text-light); font-size: 13px; font-weight: 500; }
+        .cumpl-bar-wrap {
+            background: rgba(255,255,255,0.06);
+            border-radius: 20px;
+            height: 10px;
             overflow: hidden;
         }
-        .kpi-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            width: 5px; height: 100%;
-            border-radius: 20px 0 0 20px;
+        .cumpl-bar-fill {
+            height: 100%;
+            border-radius: 20px;
+            transition: width 1s ease;
         }
-        .kpi-card.green::before { background: var(--primary); }
-        .kpi-card.blue::before  { background: #38bdf8; }
-        .kpi-label {
-            color: var(--text-light);
+
+        /* ── Separador hoy ── */
+        .hoy-separator {
+            border-top: 1px solid rgba(255,255,255,0.06);
+            margin-top: 22px;
+            padding-top: 18px;
+        }
+        .hoy-separator-label {
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            margin-bottom: 10px;
+            color: var(--text-light);
+            margin-bottom: 12px;
         }
-        .kpi-value {
-            font-size: 44px;
-            font-weight: 900;
-            line-height: 1;
-            margin-bottom: 6px;
-        }
-        .kpi-card.green .kpi-value { color: var(--primary); }
-        .kpi-card.blue  .kpi-value { color: #38bdf8; }
-        .kpi-sub { font-size: 13px; color: var(--text-light); font-weight: 500; }
+
+        /* ── Chips ── */
         .hoy-strip {
             display: flex;
             gap: 12px;
-            margin-bottom: 30px;
         }
         .hoy-chip {
             flex: 1;
@@ -91,6 +109,8 @@
             color: var(--text-light);
         }
         .hoy-chip .chip-icon { font-size: 22px; margin-bottom: 5px; display: block; }
+
+        /* ── Matriz ── */
         .matriz-container {
             background: var(--card);
             border-radius: 20px;
@@ -162,6 +182,8 @@
             color: #f59e0b;
             line-height: 1;
         }
+
+        /* ── Modal ── */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -254,35 +276,38 @@
 
         <div id="error-banner" class="error-state" style="display:none;"></div>
 
-        <!-- KPIs -->
-        <div class="kpi-grid">
-            <div class="kpi-card green animate-fade delay-1">
-                <div class="kpi-label">Puntos de hoy</div>
-                <div class="kpi-value" id="puntos-hoy">—</div>
-                <div class="kpi-sub">puntos conseguidos hoy</div>
+        <!-- Widget Cumplimiento Semanal + Chips de hoy -->
+        <div class="cumpl-widget animate-fade delay-1">
+            <div class="cumpl-widget-title">
+                <i class="fas fa-check-circle"></i>
+                Cumplimiento por Tipo de Comida
             </div>
-            <div class="kpi-card blue animate-fade delay-2">
-                <div class="kpi-label">Puntos esta semana</div>
-                <div class="kpi-value" id="puntos-semana">—</div>
-                <div class="kpi-sub" id="kpi-semana-sub">puntos acumulados esta semana</div>
-            </div>
-        </div>
 
-        <!-- Chips comidas de hoy -->
-        <div class="hoy-strip animate-fade delay-3">
-            <div class="hoy-chip pending" id="chip-Desayuno">
-                <span class="chip-icon">🌅</span>Desayuno
+            <div id="cumplimiento-usuario">
+                <div class="loading-state" style="padding:20px;">
+                    <i class="fas fa-spinner fa-spin"></i>Cargando...
+                </div>
             </div>
-            <div class="hoy-chip pending" id="chip-Comida">
-                <span class="chip-icon">🍽️</span>Comida
-            </div>
-            <div class="hoy-chip pending" id="chip-Cena">
-                <span class="chip-icon">🌙</span>Cena
+
+            <!-- Chips de hoy -->
+            <div class="hoy-separator">
+                <div class="hoy-separator-label">Hoy</div>
+                <div class="hoy-strip">
+                    <div class="hoy-chip pending" id="chip-Desayuno">
+                        <span class="chip-icon">🌅</span>Desayuno
+                    </div>
+                    <div class="hoy-chip pending" id="chip-Comida">
+                        <span class="chip-icon">🍽️</span>Comida
+                    </div>
+                    <div class="hoy-chip pending" id="chip-Cena">
+                        <span class="chip-icon">🌙</span>Cena
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Matriz semanal -->
-        <div class="matriz-container animate-fade delay-4">
+        <div class="matriz-container animate-fade delay-2">
             <div class="matriz-title">Rendimiento Semanal</div>
             <p style="color:#94a3b8; font-size:13px; margin-bottom:4px;">
                 Toca cualquier celda para ver los detalles.
@@ -340,27 +365,30 @@
                 }
 
                 const { semana } = resDash;
-                const puntosHoy    = resResumen.ok ? resResumen.puntos_hoy : 0;
-                const comidas_hoy  = resResumen.ok ? resResumen.comidas_hoy : {};
+                const comidas_hoy = resResumen.ok ? resResumen.comidas_hoy : {};
 
-                // ── KPI puntos de hoy ─────────────────────────────
-                document.getElementById('puntos-hoy').textContent = puntosHoy;
-
-                // ── KPI puntos semanales ──────────────────────────
-                const puntosSemanales = semana.reduce((acc, dia) => {
-                    const diaTotal = ['Desayuno', 'Comida', 'Cena'].reduce((s, tipo) => {
-                        const c = dia.comidas[tipo];
-                        return s + (c && c.registrado && c.puntos > 0 ? c.puntos : 0);
-                    }, 0);
-                    return acc + diaTotal;
-                }, 0);
-                document.getElementById('puntos-semana').textContent = puntosSemanales;
-
-                const diasConRegistros = semana.filter(d =>
-                    ['Desayuno','Comida','Cena'].some(t => d.comidas[t] && d.comidas[t].registrado)
-                ).length;
-                document.getElementById('kpi-semana-sub').textContent =
-                    `en ${diasConRegistros} día${diasConRegistros !== 1 ? 's' : ''} de la semana`;
+                // ── Widget cumplimiento semanal ───────────────────
+                const cumplDiv = document.getElementById('cumplimiento-usuario');
+                cumplDiv.innerHTML = '';
+                const tipos = [
+                    { tipo: 'Desayuno', color: '#f472b6', icon: 'fa-sun' },
+                    { tipo: 'Comida',   color: '#fbbf24', icon: 'fa-hamburger' },
+                    { tipo: 'Cena',     color: '#38bdf8', icon: 'fa-moon' },
+                ];
+                tipos.forEach(({ tipo, color, icon }) => {
+                    const conteo = semana.filter(d => d.comidas[tipo] && d.comidas[tipo].registrado).length;
+                    const pct    = Math.round((conteo / 7) * 100);
+                    cumplDiv.innerHTML += `
+                        <div class="cumpl-row">
+                            <div class="cumpl-header">
+                                <span><i class="fas ${icon}" style="color:${color}; margin-right:7px;"></i>${tipo}</span>
+                                <span>${conteo} / 7 días</span>
+                            </div>
+                            <div class="cumpl-bar-wrap">
+                                <div class="cumpl-bar-fill" style="width:${pct}%; background:${color};"></div>
+                            </div>
+                        </div>`;
+                });
 
                 // ── Chips de hoy ──────────────────────────────────
                 ['Desayuno', 'Comida', 'Cena'].forEach(tipo => {
