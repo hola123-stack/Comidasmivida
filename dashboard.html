@@ -26,40 +26,129 @@
         }
         .btn-logout-user:hover { background: rgba(239, 68, 68, 0.15); }
 
-        /* ── Widget cumplimiento ── */
-        .cumpl-widget {
-            background: var(--card);
-            border-radius: 20px;
-            padding: 24px;
-            border: 1px solid rgba(255,255,255,0.05);
-            margin-bottom: 30px;
+        /* ══════════════════════════════════════════
+           TOP ROW: puntos + cumplimiento lado a lado
+        ══════════════════════════════════════════ */
+        .top-row-widget {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 16px;
+            margin-bottom: 24px;
         }
-        .cumpl-widget-title {
+
+        /* ── Tarjeta izquierda: puntos semanales ── */
+        .pts-semana-card {
+            background: linear-gradient(145deg, #1e1040, #2d1b69);
+            border: 1px solid rgba(167, 139, 250, 0.25);
+            border-radius: 20px;
+            padding: 20px 18px;
+            display: flex;
+            flex-direction: column;
+        }
+        .pts-semana-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 16px;
-            font-weight: 800;
-            margin-bottom: 20px;
-            color: white;
+            gap: 7px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #c4b5fd;
+            margin-bottom: 12px;
         }
-        .cumpl-widget-title i { color: #22c55e; font-size: 17px; }
-        .cumpl-row { margin-bottom: 18px; }
+        .pts-semana-header i { color: #a78bfa; font-size: 13px; }
+        .pts-semana-valor {
+            font-size: 46px;
+            font-weight: 900;
+            line-height: 1;
+            color: #e9d5ff;
+            margin-bottom: 4px;
+        }
+        .pts-semana-sub {
+            font-size: 12px;
+            color: #a78bfa;
+            margin-bottom: 18px;
+        }
+        .pts-hoy-sep {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #7c3aed;
+            border-top: 1px solid rgba(124, 58, 237, 0.3);
+            padding-top: 14px;
+            margin-bottom: 10px;
+        }
+        .hoy-strip-mini {
+            display: flex;
+            gap: 8px;
+            flex: 1;
+            align-items: flex-end;
+        }
+        .hoy-chip-mini {
+            flex: 1;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 8px 4px;
+            border: 1.5px solid;
+            transition: all 0.3s;
+            line-height: 1.5;
+        }
+        .hoy-chip-mini span { font-size: 18px; display: block; margin-bottom: 3px; }
+        .hoy-chip-mini.done {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: rgba(34, 197, 94, 0.5);
+            color: #86efac;
+        }
+        .hoy-chip-mini.pending {
+            background: rgba(167, 139, 250, 0.07);
+            border-color: rgba(167, 139, 250, 0.2);
+            color: #7c3aed;
+        }
+
+        /* ── Tarjeta derecha: barras cumplimiento ── */
+        .cumpl-card {
+            background: linear-gradient(145deg, #1a0f3a, #251650);
+            border: 1px solid rgba(167, 139, 250, 0.2);
+            border-radius: 20px;
+            padding: 18px 16px;
+        }
+        .cumpl-card-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #ddd6fe;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .cumpl-card-title i { color: #a78bfa; }
+
+        /* Filas de cumplimiento compactas */
+        .cumpl-row {
+            margin-bottom: 13px;
+        }
         .cumpl-row:last-child { margin-bottom: 0; }
         .cumpl-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 7px;
-            font-size: 14px;
-            font-weight: 600;
-            color: white;
+            margin-bottom: 5px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #ddd6fe;
         }
-        .cumpl-header span:last-child { color: var(--text-light); font-size: 13px; font-weight: 500; }
+        .cumpl-header .cumpl-count {
+            font-size: 11px;
+            color: #7c3aed;
+            font-weight: 600;
+        }
         .cumpl-bar-wrap {
-            background: rgba(255,255,255,0.06);
+            background: rgba(109, 40, 217, 0.2);
             border-radius: 20px;
-            height: 10px;
+            height: 8px;
             overflow: hidden;
         }
         .cumpl-bar-fill {
@@ -68,90 +157,53 @@
             transition: width 1s ease;
         }
 
-        /* ── Separador hoy ── */
-        .hoy-separator {
-            border-top: 1px solid rgba(255,255,255,0.06);
-            margin-top: 22px;
-            padding-top: 18px;
-        }
-        .hoy-separator-label {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-light);
-            margin-bottom: 12px;
-        }
-
-        /* ── Chips ── */
-        .hoy-strip {
-            display: flex;
-            gap: 12px;
-        }
-        .hoy-chip {
-            flex: 1;
-            padding: 14px 10px;
-            border-radius: 16px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 700;
-            border: 2px solid;
-            transition: all 0.3s ease;
-        }
-        .hoy-chip.done {
-            background: rgba(34, 197, 94, 0.12);
-            border-color: rgba(34, 197, 94, 0.4);
-            color: #22c55e;
-        }
-        .hoy-chip.pending {
-            background: rgba(255,255,255,0.03);
-            border-color: rgba(255,255,255,0.08);
-            color: var(--text-light);
-        }
-        .hoy-chip .chip-icon { font-size: 22px; margin-bottom: 5px; display: block; }
-
         /* ── Matriz ── */
         .matriz-container {
             background: var(--card);
             border-radius: 20px;
-            padding: 30px 24px;
+            padding: 24px;
             border: 1px solid rgba(255,255,255,0.05);
         }
-        .matriz-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+        .matriz-title {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            color: #ddd6fe;
+        }
         .grid-tracker {
             display: grid;
-            grid-template-columns: 90px repeat(3, 1fr);
-            gap: 8px;
-            margin-top: 20px;
+            grid-template-columns: 72px repeat(3, 1fr);
+            gap: 6px;
+            margin-top: 16px;
         }
         .meal-header {
             text-align: center;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
-            padding: 8px 4px;
+            padding: 7px 4px;
             border-radius: 8px;
         }
         .header-desayuno { background: rgba(251,191,36,0.12); color: #fbbf24; }
         .header-comida   { background: rgba(34,197,94,0.12);  color: #22c55e; }
         .header-cena     { background: rgba(139,92,246,0.12); color: #8b5cf6; }
         .dia-label {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
-            color: var(--text-light);
+            color: #94a3b8;
             display: flex;
             align-items: center;
-            padding-left: 4px;
+            padding-left: 2px;
         }
-        .dia-label.hoy-label { color: var(--primary); font-size: 13px; }
+        .dia-label.hoy-label { color: #a78bfa; font-size: 12px; }
         .cell-box {
             aspect-ratio: 1;
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
             transition: all 0.2s ease;
             border: 2px solid transparent;
@@ -166,18 +218,18 @@
             background: rgba(239,68,68,0.1);
             border-color: rgba(239,68,68,0.2);
             color: #ef4444;
-            font-size: 16px;
+            font-size: 14px;
         }
         .cell-empty {
             background: rgba(255,255,255,0.03);
-            border-color: rgba(255,255,255,0.05);
-            color: rgba(255,255,255,0.15);
-            font-size: 14px;
+            border-color: rgba(255,255,255,0.04);
+            color: rgba(255,255,255,0.12);
+            font-size: 12px;
         }
         .cell-pts {
             position: absolute;
-            bottom: 3px; right: 4px;
-            font-size: 9px;
+            bottom: 2px; right: 3px;
+            font-size: 8px;
             font-weight: 800;
             color: #f59e0b;
             line-height: 1;
@@ -225,7 +277,7 @@
         .modal-info-row strong { color: white; }
         .btn-modal {
             padding: 12px 32px;
-            background: linear-gradient(135deg, #22c55e, #10b981);
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
             color: white;
             border: none;
             border-radius: 12px;
@@ -276,41 +328,40 @@
 
         <div id="error-banner" class="error-state" style="display:none;"></div>
 
-        <!-- Widget Cumplimiento Semanal + Chips de hoy -->
-        <div class="cumpl-widget animate-fade delay-1">
-            <div class="cumpl-widget-title">
-                <i class="fas fa-check-circle"></i>
-                Cumplimiento por Tipo de Comida
-            </div>
+        <!-- TOP ROW: puntos semanales + cumplimiento lado a lado -->
+        <div class="top-row-widget animate-fade delay-1">
 
-            <!-- Puntos de la semana -->
-            <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:14px 18px; margin-bottom:20px;">
-                <div>
-                    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--text-light); margin-bottom:4px;">Puntos esta semana</div>
-                    <div style="font-size:32px; font-weight:900; color:var(--primary); line-height:1;" id="puntos-semana">—</div>
-                    <div style="font-size:12px; color:var(--text-light); margin-top:3px;" id="kpi-semana-sub">pts acumulados</div>
+            <!-- Izquierda: puntos + chips hoy -->
+            <div class="pts-semana-card">
+                <div class="pts-semana-header">
+                    <i class="fas fa-calendar-week"></i> Esta semana
                 </div>
-                <i class="fas fa-calendar-week" style="font-size:32px; color:var(--primary); opacity:0.3;"></i>
-            </div>
+                <div class="pts-semana-valor" id="puntos-semana">—</div>
+                <div class="pts-semana-sub" id="kpi-semana-sub">pts acumulados</div>
 
-            <div id="cumplimiento-usuario">
-                <div class="loading-state" style="padding:20px;">
-                    <i class="fas fa-spinner fa-spin"></i>Cargando...
+                <div class="pts-hoy-sep">Hoy</div>
+
+                <div class="hoy-strip-mini">
+                    <div class="hoy-chip-mini pending" id="chip-Desayuno">
+                        <span>🌅</span>Desayuno
+                    </div>
+                    <div class="hoy-chip-mini pending" id="chip-Comida">
+                        <span>🍽️</span>Comida
+                    </div>
+                    <div class="hoy-chip-mini pending" id="chip-Cena">
+                        <span>🌙</span>Cena
+                    </div>
                 </div>
             </div>
 
-            <!-- Chips de hoy -->
-            <div class="hoy-separator">
-                <div class="hoy-separator-label">Hoy</div>
-                <div class="hoy-strip">
-                    <div class="hoy-chip pending" id="chip-Desayuno">
-                        <span class="chip-icon">🌅</span>Desayuno
-                    </div>
-                    <div class="hoy-chip pending" id="chip-Comida">
-                        <span class="chip-icon">🍽️</span>Comida
-                    </div>
-                    <div class="hoy-chip pending" id="chip-Cena">
-                        <span class="chip-icon">🌙</span>Cena
+            <!-- Derecha: barras de cumplimiento -->
+            <div class="cumpl-card">
+                <div class="cumpl-card-title">
+                    <i class="fas fa-check-circle"></i> Cumplimiento semanal
+                </div>
+                <div id="cumplimiento-usuario">
+                    <div style="padding:12px;text-align:center;color:#a78bfa;font-size:13px;">
+                        <i class="fas fa-spinner fa-spin"></i> Cargando...
                     </div>
                 </div>
             </div>
@@ -319,7 +370,7 @@
         <!-- Matriz semanal -->
         <div class="matriz-container animate-fade delay-2">
             <div class="matriz-title">Rendimiento Semanal</div>
-            <p style="color:#94a3b8; font-size:13px; margin-bottom:4px;">
+            <p style="color:#7c3aed; font-size:12px; margin-bottom:2px; opacity:0.8;">
                 Toca cualquier celda para ver los detalles.
             </p>
             <div class="grid-tracker" id="grid-semana">
@@ -340,7 +391,7 @@
             <i class="fas fa-times cerrar-modal" onclick="cerrarInfo()"></i>
             <div id="m-icono" class="modal-icono">⭐</div>
             <h3 id="m-titulo" style="color:white; margin-bottom:4px; font-size:15px;"></h3>
-            <h4 id="m-alimento" style="color:var(--primary); font-size:22px; margin:8px 0 16px;"></h4>
+            <h4 id="m-alimento" style="color:#c4b5fd; font-size:22px; margin:8px 0 16px;"></h4>
             <div class="modal-info-row">
                 <div><strong>Porción:</strong> <span id="m-porcion">—</span></div>
                 <div><strong>Hora:</strong> <span id="m-hora">—</span></div>
@@ -395,21 +446,21 @@
                 const cumplDiv = document.getElementById('cumplimiento-usuario');
                 cumplDiv.innerHTML = '';
                 const tipos = [
-                    { tipo: 'Desayuno', color: '#f472b6', icon: 'fa-sun' },
-                    { tipo: 'Comida',   color: '#fbbf24', icon: 'fa-hamburger' },
-                    { tipo: 'Cena',     color: '#38bdf8', icon: 'fa-moon' },
+                    { tipo: 'Desayuno', color: '#f472b6', barColor: 'linear-gradient(90deg,#f472b6,#ec4899)', icon: 'fa-sun' },
+                    { tipo: 'Comida',   color: '#fbbf24', barColor: 'linear-gradient(90deg,#fbbf24,#f59e0b)', icon: 'fa-hamburger' },
+                    { tipo: 'Cena',     color: '#818cf8', barColor: 'linear-gradient(90deg,#818cf8,#6366f1)', icon: 'fa-moon' },
                 ];
-                tipos.forEach(({ tipo, color, icon }) => {
+                tipos.forEach(({ tipo, color, barColor, icon }) => {
                     const conteo = semana.filter(d => d.comidas[tipo] && d.comidas[tipo].registrado).length;
                     const pct    = Math.round((conteo / 7) * 100);
                     cumplDiv.innerHTML += `
                         <div class="cumpl-row">
                             <div class="cumpl-header">
-                                <span><i class="fas ${icon}" style="color:${color}; margin-right:7px;"></i>${tipo}</span>
-                                <span>${conteo} / 7 días</span>
+                                <span><i class="fas ${icon}" style="color:${color}; margin-right:6px;"></i>${tipo}</span>
+                                <span class="cumpl-count">${conteo}/7</span>
                             </div>
                             <div class="cumpl-bar-wrap">
-                                <div class="cumpl-bar-fill" style="width:${pct}%; background:${color};"></div>
+                                <div class="cumpl-bar-fill" style="width:${pct}%; background:${barColor};"></div>
                             </div>
                         </div>`;
                 });
@@ -421,10 +472,10 @@
                     const hecho = comidas_hoy[tipo] === true;
                     if (hecho) {
                         chip.classList.replace('pending', 'done');
-                        chip.innerHTML = `<span class="chip-icon">${icons[tipo]}</span>${tipo}<br><small style="font-weight:400;font-size:11px;">✓ Registrado</small>`;
+                        chip.innerHTML = `<span>${icons[tipo]}</span>${tipo}<br><small style="font-weight:500;font-size:10px;opacity:.8;">✓ listo</small>`;
                     } else {
                         chip.classList.replace('done', 'pending');
-                        chip.innerHTML = `<span class="chip-icon">${icons[tipo]}</span>${tipo}`;
+                        chip.innerHTML = `<span>${icons[tipo]}</span>${tipo}`;
                     }
                 });
 
@@ -465,7 +516,7 @@
 
                     if (!comida || !comida.registrado) {
                         cell.className = 'cell-box cell-empty';
-                        cell.innerHTML = '<i class="fas fa-lock" style="font-size:13px;"></i>';
+                        cell.innerHTML = '<i class="fas fa-lock" style="font-size:11px;"></i>';
                     } else if (comida.puntos < 0) {
                         cell.className = 'cell-box cell-miss';
                         cell.innerHTML = '<i class="fas fa-times"></i>';
@@ -505,7 +556,7 @@
                 ptsEl.style.color = '#f59e0b';
             } else {
                 icon.textContent  = emojis[tipo] || '⭐';
-                ptsEl.style.color = '#22c55e';
+                ptsEl.style.color = '#a78bfa';
             }
 
             document.getElementById('modal-info').style.display = 'flex';
