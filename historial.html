@@ -72,23 +72,61 @@
         .empty-state i { font-size: 50px; margin-bottom: 15px; opacity: 0.4; display: block; }
         .empty-state p { font-size: 16px; margin-bottom: 20px; }
 
-        /* Botón editar */
-        .btn-editar {
-            padding: 5px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: transparent;
-            color: #94a3b8;
-            font-size: 12px;
-            font-weight: 600;
+        /* ── Fila seleccionable ── */
+        .table-historial tbody tr {
+            cursor: pointer;
+            transition: background 0.15s;
+            user-select: none;
+        }
+        .table-historial tbody tr:hover {
+            background: rgba(255,255,255,0.03);
+        }
+        .table-historial tbody tr.selected {
+            background: rgba(56,189,248,0.07);
+            outline: 1px solid rgba(56,189,248,0.25);
+        }
+
+        /* ── Botón Editar en header ── */
+        .btn-editar-header {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 20px;
+            border-radius: 20px;
+            border: 2px solid rgba(56,189,248,0.35);
+            background: rgba(56,189,248,0.06);
+            color: #38bdf8;
+            font-size: 13px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
+            opacity: 0.35;
+            pointer-events: none;
         }
-        .btn-editar:hover {
+        .btn-editar-header.activo {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .btn-editar-header.activo:hover {
+            background: rgba(56,189,248,0.14);
             border-color: #38bdf8;
-            color: #38bdf8;
-            background: rgba(56,189,248,0.08);
         }
+
+        /* ── Pill indicador de selección ── */
+        .seleccion-pill {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: rgba(56,189,248,0.08);
+            border: 1px solid rgba(56,189,248,0.2);
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+        }
+        .seleccion-pill.visible { display: flex; }
+        .seleccion-pill span { color: #38bdf8; }
 
         /* Modal */
         .modal-overlay {
@@ -252,11 +290,26 @@
     </nav>
 
     <div class="content">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+        <!-- Header con botón editar integrado -->
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
             <h2 class="animate-fade" style="margin-bottom:0;">Historial de Registros</h2>
-            <a href="#" class="btn-logout-user" onclick="cerrarSesion()">
-                <i class="fas fa-sign-out-alt" style="margin-right:6px;"></i> Cerrar Sesión
-            </a>
+
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <!-- Pill que indica qué está seleccionado -->
+                <div class="seleccion-pill" id="seleccion-pill">
+                    <i class="fas fa-utensils" style="font-size:11px;"></i>
+                    <span id="nombre-seleccionado">—</span>
+                </div>
+
+                <!-- Botón editar (se activa al seleccionar) -->
+                <button class="btn-editar-header" id="btn-editar-header" onclick="abrirEdicionSeleccionado()">
+                    <i class="fas fa-pencil-alt"></i> Editar
+                </button>
+
+                <a href="#" class="btn-logout-user" onclick="cerrarSesion()">
+                    <i class="fas fa-sign-out-alt" style="margin-right:6px;"></i> Cerrar Sesión
+                </a>
+            </div>
         </div>
 
         <!-- Resumen rápido -->
@@ -287,7 +340,6 @@
                         <th>Hora</th>
                         <th>Porción</th>
                         <th>Puntos</th>
-                        <th></th>
                     </tr>
                 </thead>
                 <tbody id="historial-body"></tbody>
@@ -340,9 +392,11 @@
 
     <script src="nt-store.js"></script>
     <script>
-        let filtroActual   = '';
-        let editandoId     = null;
+        let filtroActual     = '';
+        let editandoId       = null;
         let tipoSeleccionado = null;
+        let filaSeleccionada = null; // fila DOM actualmente marcada
+        let registroSeleccionado = null; // objeto del registro
         let { uid } = NTStore.getSession();
 
         (function() {
@@ -359,30 +413,75 @@
             document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             filtroActual = tipo;
+            limpiarSeleccion();
             cargarHistorial(tipo);
         }
 
+        // ── Selección de fila ─────────────────────────────────
+        function seleccionarFila(tr, registro) {
+            // Si ya estaba seleccionada, deseleccionar
+            if (filaSeleccionada === tr) {
+                limpiarSeleccion();
+                return;
+            }
+
+            // Quitar selección anterior
+            if (filaSeleccionada) filaSeleccionada.classList.remove('selected');
+
+            // Marcar nueva
+            tr.classList.add('selected');
+            filaSeleccionada     = tr;
+            registroSeleccionado = registro;
+
+            // Activar botón editar y mostrar pill
+            const btnHeader = document.getElementById('btn-editar-header');
+            btnHeader.classList.add('activo');
+
+            const pill = document.getElementById('seleccion-pill');
+            pill.classList.add('visible');
+            document.getElementById('nombre-seleccionado').textContent = registro.nombre_libre;
+        }
+
+        function limpiarSeleccion() {
+            if (filaSeleccionada) filaSeleccionada.classList.remove('selected');
+            filaSeleccionada     = null;
+            registroSeleccionado = null;
+
+            document.getElementById('btn-editar-header').classList.remove('activo');
+            const pill = document.getElementById('seleccion-pill');
+            pill.classList.remove('visible');
+        }
+
+        function abrirEdicionSeleccionado() {
+            if (!registroSeleccionado) return;
+            editandoId = registroSeleccionado.id;
+            document.getElementById('edit-nombre').value = registroSeleccionado.nombre_libre;
+            seleccionarTipo(registroSeleccionado.tipo_comida);
+            document.getElementById('modal-editar').classList.add('open');
+        }
+
+        // ── Carga de historial ────────────────────────────────
         async function cargarHistorial(filtro) {
             const res = await NTStore.getHistorial(0, filtro);
 
             if (!res.ok) {
                 document.getElementById('historial-body').innerHTML =
-                    `<tr><td colspan="8"><div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Error: ${res.error}</p></div></td></tr>`;
+                    `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Error: ${res.error}</p></div></td></tr>`;
                 return;
             }
 
             const regs    = res.registros;
             const totales = res.totales;
 
-            document.getElementById('pts-ganados').textContent     = `+${totales.ganados} pts ganados`;
-            document.getElementById('pts-perdidos').textContent     = `${totales.perdidos} pts perdidos`;
-            document.getElementById('total-registros').textContent  = `${regs.length} registros`;
+            document.getElementById('pts-ganados').textContent    = `+${totales.ganados} pts ganados`;
+            document.getElementById('pts-perdidos').textContent    = `${totales.perdidos} pts perdidos`;
+            document.getElementById('total-registros').textContent = `${regs.length} registros`;
 
             const tbody = document.getElementById('historial-body');
             tbody.innerHTML = '';
 
             if (!regs.length) {
-                tbody.innerHTML = `<tr><td colspan="8">
+                tbody.innerHTML = `<tr><td colspan="7">
                     <div class="empty-state">
                         <i class="fas fa-utensils"></i>
                         <p>No hay registros todavía.</p>
@@ -408,24 +507,16 @@
                     <td>${r.hora}</td>
                     <td><span style="font-size:11px;">${r.porcion}</span></td>
                     <td><strong style="color:${positivo ? 'var(--primary)' : '#ef4444'};">${positivo ? '+' : ''}${r.puntos_asignados} pts</strong></td>
-                    <td>
-                        <button class="btn-editar" onclick='abrirEdicion(${r.id}, ${JSON.stringify(r.nombre_libre)}, ${JSON.stringify(r.tipo_comida)})'>
-                            <i class="fas fa-pencil-alt"></i>
-                        </button>
-                    </td>
                 `;
+
+                // Clic en la fila → seleccionar
+                tr.addEventListener('click', () => seleccionarFila(tr, r));
+
                 tbody.appendChild(tr);
             });
         }
 
-        // ── Modal ─────────────────────────────────────────────────
-        function abrirEdicion(id, nombre, tipo) {
-            editandoId = id;
-            document.getElementById('edit-nombre').value = nombre;
-            seleccionarTipo(tipo);
-            document.getElementById('modal-editar').classList.add('open');
-        }
-
+        // ── Modal ─────────────────────────────────────────────
         function cerrarModal() {
             document.getElementById('modal-editar').classList.remove('open');
             editandoId       = null;
@@ -449,8 +540,8 @@
             }
 
             const btn = document.getElementById('btn-guardar');
-            btn.disabled   = true;
-            btn.innerHTML  = '<i class="fas fa-spinner fa-spin" style="margin-right:6px;"></i>Guardando...';
+            btn.disabled  = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:6px;"></i>Guardando...';
 
             try {
                 const res  = await fetch('/api/editar_registro.php', {
@@ -467,6 +558,7 @@
 
                 if (data.ok) {
                     cerrarModal();
+                    limpiarSeleccion();
                     mostrarToast('✅ Registro actualizado', 'success');
                     cargarHistorial(filtroActual);
                 } else {
