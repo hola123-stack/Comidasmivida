@@ -142,15 +142,6 @@ const NTStore = (() => {
         return data.ok ? data.usuario.puntos : 0;
     }
 
-    async function getRacha() {
-        const data = await getUsuario();
-        return data.ok ? data.usuario.racha_dias : 0;
-    }
-
-    function calcMultiplicador(rachaDias) {
-        return Math.min(2.0, 1.0 + Math.floor(rachaDias / 10) * 0.1);
-    }
-
     // ════════════════════════════════════════════════════════
     //  TIENDA — 100% base de datos
     // ════════════════════════════════════════════════════════
@@ -274,7 +265,6 @@ const NTStore = (() => {
     }
 
     // ── Init ─────────────────────────────────────────────────
-    // Ya no hace nada (no hay localStorage que inicializar para la tienda)
     function init() {}
 
     // API pública
@@ -287,10 +277,10 @@ const NTStore = (() => {
         login,
         // APIs async
         getDashboard, getResumenDia, getHistorial, addRegistro,
-        getUsuario, getPuntos, getRacha, calcMultiplicador,
-        // Tienda (ahora async/BD)
+        getUsuario, getPuntos,
+        // Tienda (async/BD)
         getItems, getItemsActivos, addItem, updateItem, toggleItem, deleteItem,
-        // Canjes (ahora async/BD)
+        // Canjes (async/BD)
         getCanjes, getCanjesTodos, getCanjesPendientes, canjear, marcarEntregado,
     };
 })();

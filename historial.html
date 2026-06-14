@@ -23,7 +23,7 @@
         .photo-thumb {
             width: 44px; height: 44px;
             border-radius: 8px;
-            background: #f1f5f9;
+            background: rgba(255,255,255,0.05);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -45,15 +45,15 @@
             align-items: center;
             gap: 7px;
         }
-        .chip-verde { background: #f0fdf4; color: #16a34a; border: 2px solid #bbf7d0; }
-        .chip-rojo  { background: #fef2f2; color: #dc2626; border: 2px solid #fecaca; }
-        .chip-azul  { background: #eff6ff; color: #2563eb; border: 2px solid #bfdbfe; }
+        .chip-verde { background: rgba(34,197,94,0.1);  color: #22c55e; border: 2px solid rgba(34,197,94,0.3); }
+        .chip-rojo  { background: rgba(239,68,68,0.1);  color: #ef4444; border: 2px solid rgba(239,68,68,0.3); }
+        .chip-azul  { background: rgba(56,189,248,0.1); color: #38bdf8; border: 2px solid rgba(56,189,248,0.3); }
         .filtros { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .filtro-btn {
             padding: 7px 16px;
             border-radius: 20px;
-            border: 2px solid #e2e8f0;
-            background: white;
+            border: 2px solid rgba(255,255,255,0.1);
+            background: transparent;
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
@@ -63,11 +63,178 @@
         .filtro-btn.active, .filtro-btn:hover {
             border-color: var(--primary);
             color: var(--primary);
-            background: #f0fdf4;
+            background: rgba(34,197,94,0.08);
         }
         .empty-state { text-align: center; padding: 60px 20px; color: var(--text-light); }
         .empty-state i { font-size: 50px; margin-bottom: 15px; opacity: 0.4; display: block; }
         .empty-state p { font-size: 16px; margin-bottom: 20px; }
+
+        /* Botón editar */
+        .btn-editar {
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: transparent;
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-editar:hover {
+            border-color: #38bdf8;
+            color: #38bdf8;
+            background: rgba(56,189,248,0.08);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: #1e293b;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            padding: 36px;
+            max-width: 400px;
+            width: 92%;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+            animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes popIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 4px;
+        }
+        .modal-sub {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 24px;
+        }
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            font-size: 15px;
+            color: white;
+            background: rgba(255,255,255,0.05);
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .form-group input[type="text"]:focus {
+            outline: none;
+            border-color: #38bdf8;
+        }
+        .tipo-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .tipo-option {
+            padding: 12px 10px;
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.03);
+            cursor: pointer;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+        .tipo-option:hover { border-color: rgba(255,255,255,0.2); color: #94a3b8; }
+        .tipo-option.selected {
+            border-color: #38bdf8;
+            background: rgba(56,189,248,0.1);
+            color: #38bdf8;
+        }
+        .tipo-option .tipo-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+        .nota-readonly {
+            background: rgba(245,158,11,0.08);
+            border: 1px solid rgba(245,158,11,0.2);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #f59e0b;
+            margin-bottom: 20px;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+        .btn-cancelar {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.1);
+            background: transparent;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-cancelar:hover { background: rgba(255,255,255,0.05); }
+        .btn-guardar {
+            flex: 2;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-guardar:hover   { opacity: 0.9; }
+        .btn-guardar:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            z-index: 2000;
+            animation: fadeInUp 0.3s ease;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+        .toast.success { background: #22c55e; }
+        .toast.error   { background: #ef4444; }
+        @keyframes fadeInUp {
+            from { transform: translateY(10px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -110,13 +277,14 @@
             <table class="table-historial">
                 <thead>
                     <tr>
-                        <th style="padding:15px;">Emoji</th>
+                        <th style="padding:15px;"></th>
                         <th>Alimento</th>
                         <th>Tipo</th>
                         <th>Día</th>
                         <th>Hora</th>
                         <th>Porción</th>
                         <th>Puntos</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody id="historial-body"></tbody>
@@ -124,75 +292,202 @@
         </div>
     </div>
 
-    <script src="nt-store.js"></script>
-    <script src="nt-store.js"></script>
-<script>
-    (function() {
-        if (!NTStore.requireAuth('user')) return;
-        cargarHistorial('');
-    })();
+    <!-- Modal de edición -->
+    <div class="modal-overlay" id="modal-editar">
+        <div class="modal-box">
+            <div class="modal-title"><i class="fas fa-pencil-alt" style="color:#38bdf8;margin-right:8px;"></i>Editar comida</div>
+            <div class="modal-sub">Puedes cambiar el nombre y el tipo de comida.</div>
 
-    function cerrarSesion() {
-        NTStore.clearSession();
-        location.href = 'login.html';
-    }
+            <div class="nota-readonly">
+                <i class="fas fa-lock" style="margin-right:6px;"></i>
+                La porción y los puntos no se pueden cambiar.
+            </div>
 
-    function cambiarFiltro(tipo, btn) {
-        document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        cargarHistorial(tipo);
-    }
+            <div class="form-group">
+                <label>¿Qué comiste?</label>
+                <input type="text" id="edit-nombre" placeholder="Ej: Avena con fresas" />
+            </div>
 
-    async function cargarHistorial(filtro) {
-        const res = await NTStore.getHistorial(0, filtro);
-
-        if (!res.ok) {
-            document.getElementById('historial-body').innerHTML =
-                `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Error: ${res.error}</p></div></td></tr>`;
-            return;
-        }
-
-        const regs = res.registros;
-        const totales = res.totales;
-
-        document.getElementById('pts-ganados').textContent    = `+${totales.ganados} pts ganados`;
-        document.getElementById('pts-perdidos').textContent   = `${totales.perdidos} pts perdidos`;
-        document.getElementById('total-registros').textContent = `${regs.length} registros`;
-
-        const tbody = document.getElementById('historial-body');
-        tbody.innerHTML = '';
-
-        if (!regs.length) {
-            tbody.innerHTML = `<tr><td colspan="7">
-                <div class="empty-state">
-                    <i class="fas fa-utensils"></i>
-                    <p>No hay registros todavía.</p>
-                    <a href="registro.html" style="background:var(--primary);color:white;padding:12px 24px;border-radius:20px;text-decoration:none;font-weight:700;">
-                        + Registrar ahora
-                    </a>
+            <div class="form-group">
+                <label>Tipo de comida</label>
+                <div class="tipo-selector">
+                    <div class="tipo-option" data-tipo="Desayuno" onclick="seleccionarTipo('Desayuno')">
+                        <span class="tipo-icon">🌅</span>Desayuno
+                    </div>
+                    <div class="tipo-option" data-tipo="Comida" onclick="seleccionarTipo('Comida')">
+                        <span class="tipo-icon">🍽️</span>Comida
+                    </div>
+                    <div class="tipo-option" data-tipo="Cena" onclick="seleccionarTipo('Cena')">
+                        <span class="tipo-icon">🌙</span>Cena
+                    </div>
+                    <div class="tipo-option" data-tipo="Merienda" onclick="seleccionarTipo('Merienda')">
+                        <span class="tipo-icon">🍎</span>Merienda
+                    </div>
                 </div>
-            </td></tr>`;
-            return;
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn-guardar" id="btn-guardar" onclick="guardarEdicion()">
+                    <i class="fas fa-check" style="margin-right:6px;"></i>Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="nt-store.js"></script>
+    <script>
+        let filtroActual   = '';
+        let editandoId     = null;
+        let tipoSeleccionado = null;
+        let { uid } = NTStore.getSession();
+
+        (function() {
+            if (!NTStore.requireAuth('user')) return;
+            cargarHistorial('');
+        })();
+
+        function cerrarSesion() {
+            NTStore.clearSession();
+            location.href = 'login.html';
         }
 
-        regs.forEach(r => {
-            const positivo = r.puntos_asignados >= 0;
-            const tr = document.createElement('tr');
-            tr.style.borderLeft = `3px solid ${positivo ? '#22c55e' : '#ef4444'}`;
-            tr.innerHTML = `
-                <td style="padding:12px 15px;">
-                    <div class="photo-thumb">${r.emoji || '🍴'}</div>
-                </td>
-                <td><strong>${r.nombre_libre}</strong></td>
-                <td><span style="color:var(--text-light); font-size:13px;">${r.tipo_comida}</span></td>
-                <td style="color:var(--text-light); font-size:13px;">${r.dia_semana} ${r.fecha}</td>
-                <td>${r.hora}</td>
-                <td><span style="font-size:11px;">${r.porcion}</span></td>
-                <td><strong style="color:${positivo ? 'var(--primary)' : '#ef4444'};">${positivo ? '+' : ''}${r.puntos_asignados} pts</strong></td>
-            `;
-            tbody.appendChild(tr);
+        function cambiarFiltro(tipo, btn) {
+            document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            filtroActual = tipo;
+            cargarHistorial(tipo);
+        }
+
+        async function cargarHistorial(filtro) {
+            const res = await NTStore.getHistorial(0, filtro);
+
+            if (!res.ok) {
+                document.getElementById('historial-body').innerHTML =
+                    `<tr><td colspan="8"><div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Error: ${res.error}</p></div></td></tr>`;
+                return;
+            }
+
+            const regs    = res.registros;
+            const totales = res.totales;
+
+            document.getElementById('pts-ganados').textContent     = `+${totales.ganados} pts ganados`;
+            document.getElementById('pts-perdidos').textContent     = `${totales.perdidos} pts perdidos`;
+            document.getElementById('total-registros').textContent  = `${regs.length} registros`;
+
+            const tbody = document.getElementById('historial-body');
+            tbody.innerHTML = '';
+
+            if (!regs.length) {
+                tbody.innerHTML = `<tr><td colspan="8">
+                    <div class="empty-state">
+                        <i class="fas fa-utensils"></i>
+                        <p>No hay registros todavía.</p>
+                        <a href="registro.html" style="background:var(--primary);color:white;padding:12px 24px;border-radius:20px;text-decoration:none;font-weight:700;">
+                            + Registrar ahora
+                        </a>
+                    </div>
+                </td></tr>`;
+                return;
+            }
+
+            regs.forEach(r => {
+                const positivo = r.puntos_asignados >= 0;
+                const tr = document.createElement('tr');
+                tr.style.borderLeft = `3px solid ${positivo ? '#22c55e' : '#ef4444'}`;
+                tr.innerHTML = `
+                    <td style="padding:12px 15px;">
+                        <div class="photo-thumb">${r.emoji || '🍴'}</div>
+                    </td>
+                    <td><strong>${r.nombre_libre}</strong></td>
+                    <td><span style="color:var(--text-light); font-size:13px;">${r.tipo_comida}</span></td>
+                    <td style="color:var(--text-light); font-size:13px;">${r.dia_semana} ${r.fecha}</td>
+                    <td>${r.hora}</td>
+                    <td><span style="font-size:11px;">${r.porcion}</span></td>
+                    <td><strong style="color:${positivo ? 'var(--primary)' : '#ef4444'};">${positivo ? '+' : ''}${r.puntos_asignados} pts</strong></td>
+                    <td>
+                        <button class="btn-editar" onclick='abrirEdicion(${r.id}, ${JSON.stringify(r.nombre_libre)}, ${JSON.stringify(r.tipo_comida)})'>
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ── Modal ─────────────────────────────────────────────────
+        function abrirEdicion(id, nombre, tipo) {
+            editandoId = id;
+            document.getElementById('edit-nombre').value = nombre;
+            seleccionarTipo(tipo);
+            document.getElementById('modal-editar').classList.add('open');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modal-editar').classList.remove('open');
+            editandoId       = null;
+            tipoSeleccionado = null;
+        }
+
+        function seleccionarTipo(tipo) {
+            tipoSeleccionado = tipo;
+            document.querySelectorAll('.tipo-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.tipo === tipo);
+            });
+        }
+
+        async function guardarEdicion() {
+            if (!editandoId) return;
+
+            const nombre = document.getElementById('edit-nombre').value.trim();
+            if (!nombre) {
+                mostrarToast('El nombre no puede estar vacío', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('btn-guardar');
+            btn.disabled   = true;
+            btn.innerHTML  = '<i class="fas fa-spinner fa-spin" style="margin-right:6px;"></i>Guardando...';
+
+            try {
+                const res  = await fetch('/api/editar_registro.php', {
+                    method:  'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        registro_id:  editandoId,
+                        usuario_id:   uid,
+                        nombre_libre: nombre,
+                        tipo_comida:  tipoSeleccionado,
+                    }),
+                });
+                const data = await res.json();
+
+                if (data.ok) {
+                    cerrarModal();
+                    mostrarToast('✅ Registro actualizado', 'success');
+                    cargarHistorial(filtroActual);
+                } else {
+                    mostrarToast('Error: ' + data.error, 'error');
+                }
+            } catch (e) {
+                mostrarToast('Error de conexión', 'error');
+            } finally {
+                btn.disabled  = false;
+                btn.innerHTML = '<i class="fas fa-check" style="margin-right:6px;"></i>Guardar';
+            }
+        }
+
+        function mostrarToast(msg, tipo = 'success') {
+            const t = document.createElement('div');
+            t.className   = `toast ${tipo}`;
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        document.getElementById('modal-editar').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModal();
         });
-    }
-</script>
+    </script>
 </body>
 </html>
