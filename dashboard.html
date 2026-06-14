@@ -283,6 +283,16 @@
                 Cumplimiento por Tipo de Comida
             </div>
 
+            <!-- Puntos de la semana -->
+            <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:14px 18px; margin-bottom:20px;">
+                <div>
+                    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--text-light); margin-bottom:4px;">Puntos esta semana</div>
+                    <div style="font-size:32px; font-weight:900; color:var(--primary); line-height:1;" id="puntos-semana">—</div>
+                    <div style="font-size:12px; color:var(--text-light); margin-top:3px;" id="kpi-semana-sub">pts acumulados</div>
+                </div>
+                <i class="fas fa-calendar-week" style="font-size:32px; color:var(--primary); opacity:0.3;"></i>
+            </div>
+
             <div id="cumplimiento-usuario">
                 <div class="loading-state" style="padding:20px;">
                     <i class="fas fa-spinner fa-spin"></i>Cargando...
@@ -366,6 +376,20 @@
 
                 const { semana } = resDash;
                 const comidas_hoy = resResumen.ok ? resResumen.comidas_hoy : {};
+
+                // ── Puntos semanales ──────────────────────────────
+                const puntosSemanales = semana.reduce((acc, dia) => {
+                    return acc + ['Desayuno', 'Comida', 'Cena'].reduce((s, tipo) => {
+                        const c = dia.comidas[tipo];
+                        return s + (c && c.registrado && c.puntos > 0 ? c.puntos : 0);
+                    }, 0);
+                }, 0);
+                const diasConRegistros = semana.filter(d =>
+                    ['Desayuno','Comida','Cena'].some(t => d.comidas[t] && d.comidas[t].registrado)
+                ).length;
+                document.getElementById('puntos-semana').textContent = puntosSemanales;
+                document.getElementById('kpi-semana-sub').textContent =
+                    `pts en ${diasConRegistros} día${diasConRegistros !== 1 ? 's' : ''} de la semana`;
 
                 // ── Widget cumplimiento semanal ───────────────────
                 const cumplDiv = document.getElementById('cumplimiento-usuario');

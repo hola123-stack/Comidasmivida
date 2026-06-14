@@ -11,6 +11,149 @@
         .admin-nav-header p { color:#f59e0b; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2px; margin-top:5px; }
         .btn-logout { display:block; margin:20px 15px 10px; padding:12px 20px; background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid rgba(239,68,68,0.3); border-radius:8px; text-align:center; cursor:pointer; font-size:14px; font-weight:600; transition:.3s; text-decoration:none; }
         .btn-logout:hover { background:rgba(239,68,68,0.2); }
+
+        /* ── Puntos strip ── */
+        .puntos-strip {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 25px;
+            align-items: stretch;
+        }
+        .puntos-box {
+            background: linear-gradient(135deg, var(--primary), #10b981);
+            color: white;
+            border-radius: 16px;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+        }
+        .puntos-box .pts-valor { font-size: 36px; font-weight: 900; line-height: 1; }
+        .puntos-box .pts-label { font-size: 13px; opacity: .9; }
+        .puntos-box .pts-sub   { font-size: 11px; opacity: .7; margin-top: 2px; }
+
+        /* ── Botón agregar puntos ── */
+        .agregar-pts-box {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border-radius: 16px;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            transition: opacity .2s, transform .2s;
+            min-width: 200px;
+        }
+        .agregar-pts-box:hover { opacity: .9; transform: translateY(-2px); }
+        .agregar-pts-box .apt-icon { font-size: 28px; }
+        .agregar-pts-box .apt-label { font-size: 15px; font-weight: 800; display: block; }
+        .agregar-pts-box .apt-sub   { font-size: 12px; opacity: .8; }
+
+        /* ── Modal agregar puntos ── */
+        .modal-pts-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.55);
+            backdrop-filter: blur(4px);
+            z-index: 1001;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-pts-overlay.open { display: flex; }
+        .modal-pts-box {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            width: 380px;
+            max-width: 95vw;
+            box-shadow: 0 25px 60px rgba(0,0,0,.2);
+            animation: popIn .28s cubic-bezier(.34,1.56,.64,1);
+            text-align: center;
+        }
+        .modal-pts-box h3 { font-size: 18px; font-weight: 800; color: var(--sidebar); margin-bottom: 6px; }
+        .modal-pts-box p  { font-size: 13px; color: var(--text-light); margin-bottom: 20px; }
+        .pts-quick-btns {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .pts-quick-btn {
+            padding: 12px 8px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            background: #f8fafc;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--sidebar);
+            cursor: pointer;
+            transition: .2s;
+        }
+        .pts-quick-btn:hover,
+        .pts-quick-btn.selected { border-color: #6366f1; background: #eef2ff; color: #6366f1; }
+        .pts-custom-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .pts-custom-wrap label { font-size: 13px; font-weight: 700; color: #64748b; white-space: nowrap; }
+        .pts-custom-input {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: inherit;
+            transition: border-color .2s;
+        }
+        .pts-custom-input:focus { outline: none; border-color: #6366f1; }
+        .pts-motivo-input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            font-size: 13px;
+            font-family: inherit;
+            box-sizing: border-box;
+            margin-bottom: 16px;
+            transition: border-color .2s;
+        }
+        .pts-motivo-input:focus { outline: none; border-color: #6366f1; }
+        .modal-pts-actions { display: flex; gap: 10px; }
+        .btn-pts-save {
+            flex: 1; padding: 13px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white; border: none; border-radius: 10px;
+            font-size: 14px; font-weight: 700; cursor: pointer; transition: .2s;
+        }
+        .btn-pts-save:hover { opacity: .9; }
+        .btn-pts-cancel {
+            flex: 1; padding: 13px;
+            background: #f1f5f9; color: #64748b;
+            border: none; border-radius: 10px;
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: .2s;
+        }
+        .btn-pts-cancel:hover { background: #e2e8f0; }
+        .pts-preview {
+            background: linear-gradient(135deg, #eef2ff, #ede9fe);
+            border: 1px solid #c7d2fe;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: #4338ca;
+            font-weight: 600;
+        }
+        .pts-preview span { font-size: 22px; font-weight: 900; }
+
+        /* ── Resto ── */
         .notif-section { margin-bottom:30px; }
         .notif-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
         .notif-title { font-size:18px; font-weight:800; color:var(--sidebar); display:flex; align-items:center; gap:10px; }
@@ -75,9 +218,6 @@
         .btn-cancel { flex:1; padding:12px; background:#f1f5f9; color:#64748b; border:none; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:background .2s; }
         .btn-cancel:hover { background:#e2e8f0; }
         .form-error { font-size:12px; color:#ef4444; margin-top:8px; display:none; }
-        .puntos-box { background:linear-gradient(135deg,var(--primary),#10b981); color:white; border-radius:16px; padding:16px 24px; display:inline-flex; align-items:center; gap:14px; margin-bottom:25px; }
-        .puntos-box .pts-valor { font-size:36px; font-weight:900; line-height:1; }
-        .puntos-box .pts-label { font-size:13px; opacity:.9; }
         .toast-global { position:fixed; bottom:25px; right:25px; background:#1e293b; color:white; padding:14px 22px; border-radius:12px; font-size:14px; font-weight:600; display:none; align-items:center; gap:10px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,.25); max-width:320px; }
     </style>
 </head>
@@ -110,12 +250,26 @@
             Gestiona artículos y aprueba los canjes de Naythan (Mivida).
         </p>
 
-        <div class="puntos-box animate-fade">
-            <i class="fas fa-coins" style="font-size:28px;"></i>
-            <div>
-                <div class="pts-valor" id="pts-usuario">—</div>
-                <div class="pts-label">Puntos disponibles de Naythan</div>
+        <!-- Puntos de Naythan + Botón agregar puntos -->
+        <div class="puntos-strip animate-fade">
+            <!-- Puntos actuales del USUARIO (Naythan), no del admin -->
+            <div class="puntos-box">
+                <i class="fas fa-coins" style="font-size:28px;"></i>
+                <div>
+                    <div class="pts-valor" id="pts-usuario">—</div>
+                    <div class="pts-label">Puntos de Naythan</div>
+                    <div class="pts-sub">saldo disponible</div>
+                </div>
             </div>
+
+            <!-- Botón para dar puntos manualmente -->
+            <button class="agregar-pts-box" onclick="abrirModalPuntos()">
+                <div class="apt-icon">➕</div>
+                <div>
+                    <span class="apt-label">Dar puntos</span>
+                    <span class="apt-sub">Agregar puntos manualmente</span>
+                </div>
+            </button>
         </div>
 
         <!-- Notificaciones de canje -->
@@ -160,7 +314,7 @@
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Modal artículo -->
     <div class="modal-overlay" id="modal-item">
         <div class="modal-box">
             <h3 id="modal-titulo">Agregar artículo</h3>
@@ -192,6 +346,47 @@
         </div>
     </div>
 
+    <!-- Modal dar puntos -->
+    <div class="modal-pts-overlay" id="modal-puntos">
+        <div class="modal-pts-box">
+            <h3>✨ Dar puntos a Naythan</h3>
+            <p>Selecciona una cantidad rápida o escribe la que quieras.</p>
+
+            <!-- Botones rápidos -->
+            <div class="pts-quick-btns">
+                <button class="pts-quick-btn" onclick="seleccionarRapido(50)">+50</button>
+                <button class="pts-quick-btn" onclick="seleccionarRapido(100)">+100</button>
+                <button class="pts-quick-btn" onclick="seleccionarRapido(150)">+150</button>
+                <button class="pts-quick-btn" onclick="seleccionarRapido(200)">+200</button>
+                <button class="pts-quick-btn" onclick="seleccionarRapido(300)">+300</button>
+                <button class="pts-quick-btn" onclick="seleccionarRapido(500)">+500</button>
+            </div>
+
+            <!-- Cantidad personalizada -->
+            <div class="pts-custom-wrap">
+                <label>Cantidad:</label>
+                <input type="number" class="pts-custom-input" id="pts-cantidad" placeholder="0" min="1"
+                    oninput="actualizarPreview()">
+            </div>
+
+            <!-- Motivo -->
+            <input type="text" class="pts-motivo-input" id="pts-motivo"
+                placeholder="Motivo (ej: comió muy bien esta semana 🌟)">
+
+            <!-- Preview -->
+            <div class="pts-preview" id="pts-preview" style="display:none;">
+                Naythan recibirá <span id="pts-preview-val">0</span> puntos extra
+            </div>
+
+            <div class="modal-pts-actions">
+                <button class="btn-pts-save" onclick="guardarPuntos()">
+                    <i class="fas fa-plus" style="margin-right:6px;"></i> Dar puntos
+                </button>
+                <button class="btn-pts-cancel" onclick="cerrarModalPuntos()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <div class="toast-global" id="toast-global">
         <i class="fas fa-check-circle" style="color:#22c55e;font-size:18px;"></i>
         <span id="toast-global-msg"></span>
@@ -199,6 +394,7 @@
 
     <script src="nt-store.js"></script>
     <script>
+        const MIVIDA_UID = 2;
         let editingId = null;
 
         (async function init() {
@@ -213,9 +409,16 @@
         }
 
         async function renderTodo() {
-            const res = await NTStore.getUsuario();
-            const pts = res.ok ? res.usuario.puntos : '—';
-            document.getElementById('pts-usuario').textContent = pts;
+            // ── Traemos los puntos de Naythan (usuario_id=2), NO del admin ──
+            try {
+                const res = await fetch(`/api/dashboard.php?usuario_id=${MIVIDA_UID}`).then(r => r.json());
+                if (res.ok) {
+                    document.getElementById('pts-usuario').textContent = res.usuario.puntos;
+                }
+            } catch(e) {
+                console.error('Error cargando puntos de usuario:', e);
+            }
+
             await renderNotificaciones();
             await renderItems();
             await renderHistorialCanjes();
@@ -373,7 +576,7 @@
             });
         }
 
-        // ── Caché de items para modal de edición ──────────────
+        // ── Modal artículo ────────────────────────────────────
         let _itemsCache = [];
 
         function abrirModal() {
@@ -429,6 +632,78 @@
             await renderItems();
         }
 
+        // ── Modal dar puntos ──────────────────────────────────
+        function abrirModalPuntos() {
+            document.getElementById('pts-cantidad').value = '';
+            document.getElementById('pts-motivo').value   = '';
+            document.getElementById('pts-preview').style.display = 'none';
+            // Limpiar selección de botones rápidos
+            document.querySelectorAll('.pts-quick-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('modal-puntos').classList.add('open');
+        }
+
+        function cerrarModalPuntos() {
+            document.getElementById('modal-puntos').classList.remove('open');
+        }
+
+        function seleccionarRapido(cantidad) {
+            document.getElementById('pts-cantidad').value = cantidad;
+            document.querySelectorAll('.pts-quick-btn').forEach(b => {
+                b.classList.toggle('selected', parseInt(b.textContent.replace('+','')) === cantidad);
+            });
+            actualizarPreview();
+        }
+
+        function actualizarPreview() {
+            const val = parseInt(document.getElementById('pts-cantidad').value) || 0;
+            const prev = document.getElementById('pts-preview');
+            if (val > 0) {
+                document.getElementById('pts-preview-val').textContent = val;
+                prev.style.display = 'block';
+            } else {
+                prev.style.display = 'none';
+            }
+            // Deseleccionar botones rápidos si se escribe a mano
+            const rapidos = [50, 100, 150, 200, 300, 500];
+            document.querySelectorAll('.pts-quick-btn').forEach((b, i) => {
+                b.classList.toggle('selected', rapidos[i] === val);
+            });
+        }
+
+        async function guardarPuntos() {
+            const cantidad = parseInt(document.getElementById('pts-cantidad').value) || 0;
+            const motivo   = document.getElementById('pts-motivo').value.trim() || 'Puntos agregados por admin';
+
+            if (cantidad <= 0) {
+                mostrarToast('⚠️ Ingresa una cantidad válida');
+                return;
+            }
+
+            try {
+                // Llamada al endpoint para agregar puntos manualmente
+                const res = await fetch('/api/agregar_puntos.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        usuario_id: MIVIDA_UID,
+                        puntos: cantidad,
+                        motivo: motivo
+                    })
+                }).then(r => r.json());
+
+                if (res.ok) {
+                    mostrarToast(`✨ +${cantidad} puntos agregados a Naythan`);
+                    cerrarModalPuntos();
+                    await renderTodo();
+                } else {
+                    mostrarToast('❌ Error: ' + (res.error || 'No se pudieron agregar los puntos'));
+                }
+            } catch(e) {
+                mostrarToast('❌ Error de conexión');
+                console.error(e);
+            }
+        }
+
         function mostrarToast(msg) {
             const t = document.getElementById('toast-global');
             document.getElementById('toast-global-msg').textContent = msg;
@@ -438,6 +713,9 @@
 
         document.getElementById('modal-item').addEventListener('click', function(e) {
             if (e.target === this) cerrarModal();
+        });
+        document.getElementById('modal-puntos').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModalPuntos();
         });
     </script>
 </body>
